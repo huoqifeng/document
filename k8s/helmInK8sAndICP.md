@@ -22,24 +22,63 @@ Ingress.
 
 ### Service如何导流
 ### Pod的生命周期以及Liveness和Readiness
-### 
+### Knative
+
 
 ## HelmChart 基础
 ### 从一个例子开始
- - .tpl and .yaml
- -  
+ 
+![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/sample-helm-code-structure.png)  
 
- 参考： https://github.com/IBM/charts/tree/master/stable/ibm-cem/charts/ibm-sch
+ - .tpl  
+   定义的一些全局变量和方法，可以被别的yaml文件引用
+ - .yaml  
+   定义Kubernetes的资源，比如Deployment, pod, service...
+ - Chart.yaml  
+   Helm Chart的信息，比如名字，版本，维护者。
+ - README.md
+ - requirements.yaml
+   定义依赖的Chart。
+ - values.yaml
+   定义yaml里面用到的变量，可以被命令行或者yaml文件覆盖。
+ - values-metadata.yaml
+   ICP special。
+ - charts 目录
+   依赖的Chart包。
+ - templates 目录
+   定义chart资源的目录，主要的代码在这里写。。。
+ - templates/tests 目录
+   定义一个或者多个Pod，部署完Chart以后，会生成这些Pod执行里面定义的测试程序。
+ - templates/deployment.yaml
+   定义的Deployment。
+ - templates/service.yaml
+   定义的Service，注意，yaml的文件名可以随意，不用跟定义的资源一致，当然，从维护的角度应该一致。
+ - ibm_cloud_pak 目录   
+   ICP Special。
+ 
+   
+   
+
+ 参考：  
+ 
+ - https://github.com/IBM/charts/tree/master/stable/ibm-cem/charts/ibm-sch
+ - https://github.com/IBM/charts/tree/master/stable/ibm-nodejs-sample 
+ 
  
 ### 与标准Helm Chart 比，ICP里多了什么？
- - values-metadata.yanl
+ - values-metadata.yaml
+   这个文件定义了values.yaml的源文件，比如，变量名字，类型等，在Chart安装的时候会用来显示定制的变量以便让用户输入，后面有例子。
  - ibm_cloud_ppa/maniefest.yaml
+   生成PPA的定义文件，后面有解释PPA。。。
  - sch
+   IBM ICP Chart定义的公用的变量和方法，我们在写自己的Chart的时候可以引用。。。
 
  
  
  
 ### Helm Chart 最佳实践
+略。。。  
+
 参考：  
  
  - https://github.com/helm/helm/tree/master/docs   
@@ -61,6 +100,17 @@ cloudcli 是一个命令行工具，安装cloudcli的同时也会安装kubectl�
 
 ### 让cloudcli，docker和helm能访问ICP Master
 修改client host并copy CA文件使得client安装的cloudcli，kubectl， docker 和helm 能访问 K8s master。  
+ 
+ - edit /etc/hosts and add   
+```
+172.16.26.215    mycluster.icp
+```
+ - copy ca file
+```
+scp root@mycluster.icp:/etc/docker/certs.d/mycluster.icp\:8500/ca.crt ~/.docker/certs.d/mycluster.icp\:8500/ca.crt. 
+sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ~/.docker/certs.d/mycluster.icp\:8500/ca.crt  
+docker > restart
+``` 
   
 参考：   
  
@@ -158,7 +208,7 @@ cloudcli 是一个命令行工具，安装cloudcli的同时也会安装kubectl�
 `imagePullPolicy: IfNotPresent `
 
 
-### 看看结果
+### 查看结果
 再看pod的状态，结果就应该是这样的了：  
 
 ```
@@ -212,7 +262,7 @@ mycluster.icp:8500/ibmcom/icp-nodejs-sample-s390x:8
 ```
 
 
-我们再来看，pod已经重新建立并且被assigne到了s390的节点，我们可以用kubectl来查一下：   
+我们再来看，pod已经重新建立并且被分配到了s390的节点，我们可以用kubectl来查一下：   
 
 ```
 huoqifengdembp:document huoqifeng$ kubectl describe node 172.16.32.185
@@ -261,8 +311,10 @@ kubectl label nodes 172.16.26.216 arch-
  
 
 ### Scale pods
-
+接下来我们来scale部署的pod数量：  
 `kubectl scale deploy ibm-nodejs-sample-nodejssample-nodejs --replicas=2 -n default`  
+
+查看结果：  
 
 ```
 huoqifengdembp:document huoqifeng$ kubectl get po
@@ -272,8 +324,23 @@ ibm-nodejs-sample-nodejssample-nodejs-699d45cf49-qwk9v   1/1     Running   0    
 
 ```
 ### 为ICP制作ppa
-为什么需要PPA
+为什么需要PPA？我们前面的例子也碰到了，当ICP的节点不能访问互联网的时候，必须手工的把image上传到ICP本地的registry，这带来很多不必要的麻烦，所以ICP提供了另外一种打包方式 -- PPA(Packaged Passport Advantage)， 通过PPA，Helm Chart和Docker Image可以被打包到一个压缩文件里面，比如：  
+
+ - 打包命令：  
+`cloudctl catalog create-archive`
+ - 加载命令：  
+`cloudctl catalog load-archive`
+
+参考：  
+
+ - https://www.ibm.com/support/knowledgecenter/en/SSBS6K_3.1.0/manage_cluster/cli_catalog_commands.html
+
+ 
 ### Helm Chart & PPA 开发流程
+参考：  
+
+- http://icp-content-playbook.rch.stglabs.ibm.com/publishing-content/
+
 
 
 
