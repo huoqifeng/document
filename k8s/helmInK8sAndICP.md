@@ -5,10 +5,21 @@
 
 ## K8s预备知识
 ### K8s架构
- - 架构
- - 代码结构
+ - 架构  
+ ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/k8s-arch.png) 
+ - 代码结构  
+  ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/k8s-src.png) 
 
- 参考：
+ - Scheduler
+ - apiserver
+ - kubelet
+ - kube-proxy
+ - etcd
+
+ 参考：  
+
+ - https://github.com/kubernetes/kubernetes
+ - https://kubernetes.io/docs/concepts/ 
 
 ### K8s里面的一些术语
 Deployment. 
@@ -23,6 +34,9 @@ Ingress.
 ### Service如何导流
 ### Pod的生命周期以及Liveness和Readiness
 ### Knative
+参考：  
+
+ - https://github.com/knative
 
 
 ## HelmChart 基础
@@ -37,21 +51,21 @@ Ingress.
  - Chart.yaml  
    Helm Chart的信息，比如名字，版本，维护者。
  - README.md
- - requirements.yaml
+ - requirements.yaml  
    定义依赖的Chart。
- - values.yaml
+ - values.yaml  
    定义yaml里面用到的变量，可以被命令行或者yaml文件覆盖。
- - values-metadata.yaml
+ - values-metadata.yaml  
    ICP special。
- - charts 目录
+ - charts 目录  
    依赖的Chart包。
- - templates 目录
+ - templates 目录  
    定义chart资源的目录，主要的代码在这里写。。。
- - templates/tests 目录
+ - templates/tests 目录  
    定义一个或者多个Pod，部署完Chart以后，会生成这些Pod执行里面定义的测试程序。
- - templates/deployment.yaml
+ - templates/deployment.yaml  
    定义的Deployment。
- - templates/service.yaml
+ - templates/service.yaml  
    定义的Service，注意，yaml的文件名可以随意，不用跟定义的资源一致，当然，从维护的角度应该一致。
  - ibm_cloud_pak 目录   
    ICP Special。
@@ -66,11 +80,11 @@ Ingress.
  
  
 ### 与标准Helm Chart 比，ICP里多了什么？
- - values-metadata.yaml
+ - values-metadata.yaml  
    这个文件定义了values.yaml的源文件，比如，变量名字，类型等，在Chart安装的时候会用来显示定制的变量以便让用户输入，后面有例子。
- - ibm_cloud_ppa/maniefest.yaml
+ - ibm_cloud_ppa/maniefest.yaml  
    生成PPA的定义文件，后面有解释PPA。。。
- - sch
+ - sch  
    IBM ICP Chart定义的公用的变量和方法，我们在写自己的Chart的时候可以引用。。。
 
  
