@@ -5,39 +5,107 @@
 
 ## K8s预备知识
 ### K8s架构
+
+ - Declarative  
+ Declarative 的意思是申明的、陈述的，与之相反的是 Imperative，Imperative 意思是命令式的。首先说一下 Kubernetes 设计完全是按照 Declarative 设计的。Declarative 的定义是用户设定期望的状态，系统会知道它需要执行什么操作，来达到期望的状态。
+ - async  
+ 所有的操作都是异步的。
+ - Reconcile
+ Reconcile 中文意思是 “调和”，“和解” 的意思，简单的说就是它不断使系统当的状态，向用户期望的状态移动。比如说右边的例子，用户期望的 Replica 是三个，Controller 通过 Watch 发现期望的状态是 3 个，但实际观测到的 Replica 的是 2 个，所以它就会 Create 一个新的 Pod。然后 Controller 会继续 Watch 这些 Pod，当它发现 Create 完成了，就会更新 Status 到 3 个，使 Status 和 Spec 达到一致的状态。
  - 架构  
  ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/k8s-arch.png) 
  - 代码结构  
   ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/k8s-src.png) 
 
- - Scheduler
- - apiserver
- - kubelet
+ - Scheduler  
+   Run on master, Schedule and bind pod to node.
+ - controller-manager     
+   For ingress management
+ - apiserver  
+   The only rest server run on master, all request must reach to apiserver, and api server communicate with etcd.
+ - kubelet  
+   agent, run on every node
  - kube-proxy
- - etcd
+   Proxy，run on every node.
+ - etcd  
+   基于Raft一致性协议的高可靠的KV存储系统 vs ZooKeeper 基于一致性协议Zab（Zookeeper Atomic Broadcas）
 
  参考：  
 
  - https://github.com/kubernetes/kubernetes
+ - https://github.com/opencontainers/runc
  - https://kubernetes.io/docs/concepts/ 
+ - https://www.jianshu.com/p/5aed73b288f7
+ - https://www.kubernetes.org.cn/3031.html
+ 
 
 ### K8s里面的一些术语
-Deployment. 
-Service. 
-ReplicaSet. 
-Pod. 
-Container. 
-Ingress. 
+
+ - Deployment.  
+   create ReplicaSet
+ - Service.  
+   loadbalance pod
+ - ReplicaSet.  
+   Recoucil pods
+ - Pod. 
+   Contain containers
+ - Container. 
+ - Ingress.  
+   Internet -> ingress -> service -> pod
+
+ 
+参考：  
+
+ - https://kubernetes.io/docs/concepts/services-networking/ingress/
+ - https://kubernetes.io/docs/concepts/containers/images/
+ - https://kubernetes.io/docs/concepts/services-networking/service/
+ - https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 
 ### Deployment如何管理Pods
 
-### Service如何导流
+### Service如何做loadbalancer
 ### Pod的生命周期以及Liveness和Readiness
+
+![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/pod-lifecycle.png) 
+
+ - Liveness:  
+   Container is running.
+ - Readiness:  
+   App is runung.
+ - postStart
+ - preStop
+
+参考：  
+
+ - https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/
+ - https://kubernetes.io/docs/tasks/configure-pod-container/attach-handler-lifecycle-event/
+ 
+ 
 ### Knative
+目标： 技术上基于K8s CRD，实现serverless 平台，自动完成代码到容器的构建。
+
+![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/knative.png) 
+
+ - Build： 
+   构建系统，把用户定义的函数和应用 build 成容器镜像
+ - Serving： 
+   服务系统，用来配置应用的路由、升级策略、自动扩缩容等功能
+ - Eventing： 
+   事件系统，用来自动完成事件的绑定和触发
+
 参考：  
 
  - https://github.com/knative
+ - https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/
 
+### 服务网格（Service Mesh）& Istio
+
+![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/istio-control-plane.png)  
+
+ 
+参考：  
+ 
+ -  https://istio.io/docs/concepts/what-is-istio/
 
 ## HelmChart 基础
 ### 从一个例子开始
