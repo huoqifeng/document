@@ -1,16 +1,23 @@
 # Helm Chart in Kubernetes and ICP (IBM Cloud Private)
 
-本文基于 IBM Cloud Private（ICP）3.1.0 和ICP自带的Kubernetes 1.11.1
+本文基于 IBM Cloud Private（ICP）3.1.0 和ICP自带的Kubernetes 1.11.1.  
 参考： https://www.ibm.com/support/knowledgecenter/en/SSBS6K_3.1.0/getting_started/whats_new.html
 
 ## K8s预备知识
 ### K8s架构
+ - 架构
+ - 代码结构
+
+ 参考：
+
 ### K8s里面的一些术语
 Deployment. 
 Service. 
 ReplicaSet. 
 Pod. 
 Container. 
+Ingress. 
+
 ### Deployment如何管理Pods
 
 ### Service如何导流
@@ -22,10 +29,14 @@ Container.
  - .tpl and .yaml
  -  
 
+ 参考： https://github.com/IBM/charts/tree/master/stable/ibm-cem/charts/ibm-sch
  
 ### 与标准Helm Chart 比，ICP里多了什么？
  - values-metadata.yanl
- - ibm_cloud_ppa/maniefest.yanl
+ - ibm_cloud_ppa/maniefest.yaml
+ - sch
+
+ 
  
  
 ### Helm Chart 最佳实践
@@ -95,11 +106,72 @@ cloudcli 是一个命令行工具，安装cloudcli的同时也会安装kubectl�
 ### 安装Helm Chart
 在K8s里面一般用命令行安装Chart： `helm install`。  
 我们看看在ICP里怎么通过UI来安装，打开： Helm -> Repositories -> Catalog， 如下图：   
-[!PIC -- TODO].   
+![app nodejs in catalog](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/helm-catalog-nodejs.png).   
 
+![nodejs configure](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/nodejs-helm-configure.png)
+
+![nodejs install](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/nodejs-helm-install.png)
+
+![manage workload release](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/workload-helm-release.png)
+
+![check in release](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/nodejs-release.png)
 
 ### 上传Image
+我们用	`kubectl get po` 命令查看新创建的pod会发信有错误，原因是ICP的worker node 不能访问image registry (docker hub),所以要把docker hub上的image上传到ICP的local image registry上， 后面会介绍另外一种方法： PPA
+
+前面的准备工作已经保证了client端的docker可以访问ICP的docker server。同时在/etc/hosts map了ICP master IP 到domain： mycluster.icp   
+ 
+下面是pull image， tag， push的命令：  
+ 
+ - login icp docker server.  
+ `docker login mycluster.icp:8500`
+ - pull image from docker hub to local.  
+ `docker pull ibmcom/icp-nodejs-sample:8`
+ - pull the s390 image.   
+ `docker pull ibmcom/icp-nodejs-sample-s390x:8`
+ - tag the image.  
+ `docker tag ibmcom/icp-nodejs-sample:8 mycluster.icp:8500/ibmcom/icp-nodejs-sample:8`
+ - tag the s390x image.   
+ `docker tag ibmcom/icp-nodejs-sample-s390x:8 mycluster.icp:8500/ibmcom/icp-nodejs-sample-s390x:8`
+ - push the image from local to ICP docker registry.  
+ `docker push mycluster.icp:8500/ibmcom/icp-nodejs-sample:8`
+ - push the s390x image.  
+ `docker push mycluster.icp:8500/ibmcom/icp-nodejs-sample-s390x:8`
+
+				
+	
+我们到ICP的管理界面看看上传的image：  			
+![images nodejs](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/images-nodejs.png)				
+				
+				
+				
+
 ### 修改image repo
+这时候images都上传到ICP了，再来看`kubectl get po` pod还是有错误，因为image的URL发生了变化，我们再来改一下`Deployment`的`image url`.  
+执行下面的命令：   
+`kubectl edit deploy ibm-nodejs-sample-nodejssample-nodejs -n default`
+替换下面的响应的`image url`:  
+`mycluster.icp:8500/ibmcom/icp-nodejs-sample:8`.  
+同时修改下面的几个变量：  
+`- name: CLUSTER_CA_DOMAIN    
+   value: mycluster.icp`    
+`imagePullPolicy: IfNotPresent `
+
+
+### 看看结果
+再看pod的状态，结果就应该是这样的了：  
+
+```
+huoqifengdembp:document huoqifeng$ kubectl get po  
+NAME                                                     READY   STATUS    RESTARTS   AGE  
+ibm-nodejs-sample-nodejssample-nodejs-699d45cf49-274l8   1/1     Running   0          7h
+```
+再到ICP的管理界面：  
+![images nodejs](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/release-to-launch.png).  
+点击 `launch` 就打开了这个sample app.  
+![images nodejs](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/nodejs-launch.png)	
+
+我们可以看到，这里IP地址是ICP Master的IP，port是前面创建的service的port。 
 ### 为Pod选择worker节点
 ### Scale pods
 ### 为ICP制作ppa
