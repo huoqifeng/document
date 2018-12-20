@@ -117,7 +117,7 @@ cloudcli 是一个命令行工具，安装cloudcli的同时也会安装kubectl�
 ![check in release](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/nodejs-release.png)
 
 ### 上传Image
-我们用	`kubectl get po` 命令查看新创建的pod会发信有错误，原因是ICP的worker node 不能访问image registry (docker hub),所以要把docker hub上的image上传到ICP的local image registry上， 后面会介绍另外一种方法： PPA
+我们用	`kubectl get po` 命令查看新创建的pod会发现有错误，原因是ICP的worker node 不能访问image registry (docker hub),所以要把docker hub上的image上传到ICP的local image registry上， 后面会介绍另外一种方法： PPA
 
 前面的准备工作已经保证了client端的docker可以访问ICP的docker server。同时在/etc/hosts map了ICP master IP 到domain： mycluster.icp   
  
@@ -173,7 +173,104 @@ ibm-nodejs-sample-nodejssample-nodejs-699d45cf49-274l8   1/1     Running   0    
 
 我们可以看到，这里IP地址是ICP Master的IP，port是前面创建的service的port。 
 ### 为Pod选择worker节点
+默认的image是用的amd64，我们部署的cluster实际上包含两种worker node，x86节点和基于LAPR的s390x节点， 如下：  
+
+```
+huoqifengdembp:document huoqifeng$ kubectl get nodes --show-labels
+NAME            STATUS   ROLES                          AGE   VERSION          LABELS
+172.16.26.215   Ready    etcd,management,master,proxy   16d   v1.11.1+icp-ee   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,etcd=true,kubernetes.io/hostname=172.16.26.215,management=true,master=true,node-role.kubernetes.io/etcd=true,node-role.kubernetes.io/management=true,node-role.kubernetes.io/master=true,node-role.kubernetes.io/proxy=true,proxy=true,role=master
+172.16.26.216   Ready    worker                         16d   v1.11.1+icp-ee   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/hostname=172.16.26.216,node-role.kubernetes.io/worker=true
+172.16.32.185   Ready    worker                         15d   v1.11.1+icp-ee   beta.kubernetes.io/arch=s390x,beta.kubernetes.io/os=linux,kubernetes.io/hostname=172.16.32.185,node-role.kubernetes.io/worker=true
+
+```
+
+我们看到节点`172.16.26.216`的标签包含`beta.kubernetes.io/arch=amd64`, 节点`172.16.32.185`的标签包含`beta.kubernetes.io/arch=s390x`,这是因为216节点是x86架构，185节点是s390架构，他们在加入K8s cluster的时候会被自动加上响应的arch标签。  
+
+现在我们就用这个标签，通过修改deployment来在创建pod的时候选择worker node。  
+通过下面的命令编辑Deployment：  
+```
+kubectl edit deploy ibm-nodejs-sample-nodejssample-nodejs -n default
+```   
+增加下面的代码：  
+
+```
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - s390x
+```   
+同时要修改相应的image：  
+
+```
+mycluster.icp:8500/ibmcom/icp-nodejs-sample-s390x:8
+```
+
+
+我们再来看，pod已经重新建立并且被assigne到了s390的节点，我们可以用kubectl来查一下：   
+
+```
+huoqifengdembp:document huoqifeng$ kubectl describe node 172.16.32.185
+Name:               172.16.32.185
+Roles:              worker
+Labels:             beta.kubernetes.io/arch=s390x
+                    beta.kubernetes.io/os=linux
+                    kubernetes.io/hostname=172.16.32.185
+                    node-role.kubernetes.io/worker=true
+Annotations:        node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Wed, 05 Dec 2018 12:53:28 +0800
+Taints:             <none>
+Unschedulable:      false
+  Namespace                  Name                                                      CPU Requests  CPU Limits  Memory Requests  Memory Limits  AGE
+  ---------                  ----                                                      ------------  ----------  ---------------  -------------  ---
+  default                    ibm-nodejs-sample-nodejssample-nodejs-699d45cf49-274l8    100m (1%)     100m (1%)   128Mi (0%)       128Mi (0%)     8h
+  kube-system                audit-logging-fluentd-ds-qf8g7                            0 (0%)        0 (0%)      0 (0%)           0 (0%)         15d
+  kube-system                calico-node-49lfl                                         300m (3%)     0 (0%)      150Mi (0%)       0 (0%)         15d
+  kube-system                k8s-proxy-172.16.32.185                                   0 (0%)        0 (0%)      0 (0%)           0 (0%)         15d
+  kube-system                logging-elk-filebeat-ds-nv5sm                             0 (0%)        0 (0%)      0 (0%)           0 (0%)         15d
+  kube-system                metering-reader-l4dk4                                     250m (2%)     0 (0%)      512Mi (1%)       0 (0%)         15d
+  kube-system                monitoring-prometheus-nodeexporter-48bpk                  0 (0%)        0 (0%)      0 (0%)           0 (0%)         15d
+  kube-system                nvidia-device-plugin-plrxg                                150m (1%)     0 (0%)      0 (0%)           0 (0%)         15d
+
+```
+
+
+当然，你也可以自己添加或者删除标签来实现，比如：  
+
+```
+kubectl label nodes 172.16.32.185 arch=lpar
+kubectl label nodes 172.16.26.216 arch=x86
+				
+kubectl label nodes 172.16.32.185 arch-
+kubectl label nodes 172.16.26.216 arch-
+```
+
+更多的选择选项请参考下面的文档：  
+
+参考：  
+
+ - https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/
+ - https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+
+ 
+
 ### Scale pods
+
+`kubectl scale deploy ibm-nodejs-sample-nodejssample-nodejs --replicas=2 -n default`  
+
+```
+huoqifengdembp:document huoqifeng$ kubectl get po
+NAME                                                     READY   STATUS    RESTARTS   AGE
+ibm-nodejs-sample-nodejssample-nodejs-699d45cf49-274l8   1/1     Running   0          8h
+ibm-nodejs-sample-nodejssample-nodejs-699d45cf49-qwk9v   1/1     Running   0          1d
+
+```
 ### 为ICP制作ppa
 为什么需要PPA
 ### Helm Chart & PPA 开发流程
