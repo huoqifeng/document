@@ -1,26 +1,26 @@
 # Helm Chart in Kubernetes and ICP (IBM Cloud Private)
 
-本文基于 IBM Cloud Private（ICP）3.1.0 和ICP自带的Kubernetes 1.11.1.  
+本文基于IBM Cloud Private(ICP)3.1.0和ICP自带的Kubernetes 1.11.1.  
 参考： https://www.ibm.com/support/knowledgecenter/en/SSBS6K_3.1.0/getting_started/whats_new.html
 
 ## K8s预备知识
 ### K8s架构
 
- - Declarative  
+ - 声明式(Declarative)  
  Declarative 的意思是申明的、陈述的，与之相反的是 Imperative，Imperative 意思是命令式的。首先说一下 Kubernetes 设计完全是按照 Declarative 设计的。Declarative 的定义是用户设定期望的状态，系统会知道它需要执行什么操作，来达到期望的状态。
- - async  
+ - 异步(async)  
  所有的操作都是异步的。
- - Reconcile
- Reconcile 中文意思是 “调和”，“和解” 的意思，简单的说就是它不断使系统当的状态，向用户期望的状态移动。比如说右边的例子，用户期望的 Replica 是三个，Controller 通过 Watch 发现期望的状态是 3 个，但实际观测到的 Replica 的是 2 个，所以它就会 Create 一个新的 Pod。然后 Controller 会继续 Watch 这些 Pod，当它发现 Create 完成了，就会更新 Status 到 3 个，使 Status 和 Spec 达到一致的状态。
+ - 调和(Reconcile)
+ Reconcile中文意思是 “调和”，“和解” 的意思，简单的说就是它不断使系统当的状态，向用户期望的状态移动。比如说，用户期望的 Replica 是三个，Controller 通过 Watch 发现期望的状态是 3 个，但实际观测到的 Replica 的是 2 个，所以它就会 Create 一个新的 Pod。然后 Controller 会继续 Watch 这些 Pod，当它发现 Create 完成了，就会更新 Status 到 3 个，使 Status 和 Spec 达到一致的状态。
  - 架构  
  ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/k8s-components.png) 
  - 代码结构  
   ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/k8s-src.png) 
 
  - Scheduler  
-   Gets pending Pods from kube-apiserver, assigns a minion to the Pod on which it should run, and writes the assignments back to API server. kube-scheduler assigns minions based on available resources, QoS, data locality and other policies described in its driving algorithm  
+   Scheduler 从 api-server 获取应该编排的 pod， 基于可用的 resources, QoS, data locality 和其他 policy 来获取和分配 Pod 应该在哪个节点运行，并把绑定的结果发送回 api-server。 
  - controller-manager     
-    Runs control loops that manage objects from kube-apiserver and perform actions to make sure these objects maintain the states described by their specs  
+    controller-manager 从 api-server 读取资源的状态并采取相应的动作以保持资源和他们的声明一致，包括几个： 
     - Node Controller:  
     Responsible for noticing and responding when nodes go down.
     - Replication Controller:  
@@ -52,9 +52,9 @@
  - Deployment.  
    create ReplicaSet
  - Service.  
-   loadbalance pod
+   loadbalance pods
  - ReplicaSet.  
-   Recoucil pods
+   Pods 编排状态的声明
  - Pod. 
    Contain containers
  - Container. 
@@ -69,7 +69,6 @@
  - https://kubernetes.io/docs/concepts/services-networking/service/
  - https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 
-### Deployment如何管理Pods
 
 ### Service如何路由服务请求
  
@@ -79,10 +78,10 @@
  ![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/network-openswitch.png) 
  ![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/network-direct-connect.png)
   
- - 路由  
+ - 服务(Service)和路由  
  Kubernetes services are an abstraction for pods, providing a stable, virtual IP (VIP) address. As pods may come and go, for example in the process of a rolling upgrade, services allow clients to reliably connect to the containers running in the pods, using the VIP. The virtual in VIP means it’s not an actual IP address connected to a network interface but its purpose is purely to forward traffic to one or more pods. Keeping the mapping between the VIP and the pods up-to-date is the job of kube-proxy, a process that runs on every node, which queries the API server to learn about new services in the cluster.
  
- 来看一个例子，given svc vip is: 172.30.40.155, pods ip are: 172.17.0.2, 172.17.0.4
+ 来看一个例子，如果我们又一个 service, 它的 vip: 172.30.40.155 端口： 80, 它对应的 pods ip 是: 172.17.0.2, 172.17.0.4， Pod 的监听端口是： 9876， kube-proxy在每个node上维护的iptables是这样的：  
  
  ```
  $ sudo iptables-save | grep simpleservice
@@ -94,6 +93,8 @@
 -A KUBE-SVC-IKIIGXZ2IBFIBYI6 -m comment --comment "namingthings/simpleservice:" -m statistic --mode random --probability 0.50000000000 -j KUBE-SEP-ASIN52LB5SMYF6KR
 -A KUBE-SVC-IKIIGXZ2IBFIBYI6 -m comment --comment "namingthings/simpleservice:" -j KUBE-SEP-RP53IYKEFRDLQANZ
 ```
+
+通过这个iptables，对 172.30.40.155:80 的访问都被转发到 172.17.0.2:9876 或者 172.17.0.4:9876 上， 通过kube-dns 也可以用service name访问。
 
 如图：  
 ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/svc-route.png) 
@@ -134,6 +135,8 @@ Fluentd as a agent can collect all the logs, will also adds some Kubernetes-spec
 ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/log-1.png)  
 
  - Using a sidecar container with the logging agent
+
+通过这个Sidecar可以把Containers写到不同的本地log文件 streaming 到node上的log文件上。。。
 
 ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/log-2.png) 
 
@@ -194,6 +197,7 @@ Mon Jan  1 00:00:02 UTC 2001 INFO 2
 ```
 
  - Include a dedicated sidecar container for logging in an application pod.  
+ Pod里面的Sidecar(Container) 收集同一个Pod的log，发送的log server。
  
 ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/log-3.png) 
 configure fluentd:  
