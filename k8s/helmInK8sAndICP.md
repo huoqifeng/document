@@ -13,13 +13,14 @@
  - Reconcile
  Reconcile 中文意思是 “调和”，“和解” 的意思，简单的说就是它不断使系统当的状态，向用户期望的状态移动。比如说右边的例子，用户期望的 Replica 是三个，Controller 通过 Watch 发现期望的状态是 3 个，但实际观测到的 Replica 的是 2 个，所以它就会 Create 一个新的 Pod。然后 Controller 会继续 Watch 这些 Pod，当它发现 Create 完成了，就会更新 Status 到 3 个，使 Status 和 Spec 达到一致的状态。
  - 架构  
- ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/k8s-arch.png) 
+ ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/k8s-components.png) 
  - 代码结构  
   ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/k8s-src.png) 
 
  - Scheduler  
-   Run on master, Schedule and bind pod to node.
+   Gets pending Pods from kube-apiserver, assigns a minion to the Pod on which it should run, and writes the assignments back to API server. kube-scheduler assigns minions based on available resources, QoS, data locality and other policies described in its driving algorithm  
  - controller-manager     
+    Runs control loops that manage objects from kube-apiserver and perform actions to make sure these objects maintain the states described by their specs  
     - Node Controller:  
     Responsible for noticing and responding when nodes go down.
     - Replication Controller:  
@@ -31,9 +32,9 @@
  - apiserver  
    The only rest server run on master, all request must reach to apiserver, and api server communicate with etcd.
  - kubelet  
-   agent, run on every node
+   A Kubernetes worker that runs on each minion. It watches Pods via kube-apiserver and looks for Pods that are assigned to itself. It then syncs these Pods if possible. The procedure of Syncing Pods requires resource provisioning (i.e. mount volume), talking with container runtime to manage Pod life cycle (i.e. pull images, run containers, check container health, delete containers and garbage collect containers)  
  - kube-proxy
-   Proxy，run on every node.
+   A network proxy that reflects Service (defined in Kubernetes REST API) that runs on each node. Watches Service and Endpoint objects from kube-apiserver and modifies the underlying kernel iptable for routing and redirection.  
  - etcd  
    基于Raft一致性协议的高可靠的KV存储系统 vs ZooKeeper 基于一致性协议Zab（Zookeeper Atomic Broadcas）
 
@@ -78,10 +79,11 @@
  ![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/network-openswitch.png) 
  ![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/network-direct-connect.png)
   
- - 路由
+ - 路由  
  Kubernetes services are an abstraction for pods, providing a stable, virtual IP (VIP) address. As pods may come and go, for example in the process of a rolling upgrade, services allow clients to reliably connect to the containers running in the pods, using the VIP. The virtual in VIP means it’s not an actual IP address connected to a network interface but its purpose is purely to forward traffic to one or more pods. Keeping the mapping between the VIP and the pods up-to-date is the job of kube-proxy, a process that runs on every node, which queries the API server to learn about new services in the cluster.
  
- 来看一个例子，svc vip is: 172.30.40.155, pods ip are: 172.17.0.2, 172.17.0.4
+ 来看一个例子，given svc vip is: 172.30.40.155, pods ip are: 172.17.0.2, 172.17.0.4
+ 
  ```
  $ sudo iptables-save | grep simpleservice
 -A KUBE-SEP-ASIN52LB5SMYF6KR -s 172.17.0.2/32 -m comment --comment "namingthings/simpleservice:" -j KUBE-MARK-MASQ
