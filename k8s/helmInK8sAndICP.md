@@ -70,7 +70,38 @@
 
 ### Deployment如何管理Pods
 
-### Service如何做loadbalancer
+### Service如何路由服务请求
+ 
+ - 网络.  
+ docker 通过 bridge 和 veth pair 能保证容器间的网络通信和基于IP的连接，kubernetes借助calico，flannel等网络层，实现跨node的containers的网络通信以及基于IP的连接，也就是说，所有K8s Clusters上的pod ip都在一个网络上，比如：
+  
+ ![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/network-openswitch.png) 
+ ![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/network-direct-connect.png)
+  
+ - 路由
+ Kubernetes services are an abstraction for pods, providing a stable, virtual IP (VIP) address. As pods may come and go, for example in the process of a rolling upgrade, services allow clients to reliably connect to the containers running in the pods, using the VIP. The virtual in VIP means it’s not an actual IP address connected to a network interface but its purpose is purely to forward traffic to one or more pods. Keeping the mapping between the VIP and the pods up-to-date is the job of kube-proxy, a process that runs on every node, which queries the API server to learn about new services in the cluster.
+ 
+ 来看一个例子，svc vip is: 172.30.40.155, pods ip are: 172.17.0.2, 172.17.0.4
+ ```
+ $ sudo iptables-save | grep simpleservice
+-A KUBE-SEP-ASIN52LB5SMYF6KR -s 172.17.0.2/32 -m comment --comment "namingthings/simpleservice:" -j KUBE-MARK-MASQ
+-A KUBE-SEP-ASIN52LB5SMYF6KR -p tcp -m comment --comment "namingthings/simpleservice:" -m tcp -j DNAT --to-destination 172.17.0.2:9876
+-A KUBE-SEP-RP53IYKEFRDLQANZ -s 172.17.0.4/32 -m comment --comment "namingthings/simpleservice:" -j KUBE-MARK-MASQ
+-A KUBE-SEP-RP53IYKEFRDLQANZ -p tcp -m comment --comment "namingthings/simpleservice:" -m tcp -j DNAT --to-destination 172.17.0.4:9876
+-A KUBE-SERVICES -d 172.30.40.155/32 -p tcp -m comment --comment "namingthings/simpleservice: cluster IP" -m tcp --dport 80 -j KUBE-SVC-IKIIGXZ2IBFIBYI6
+-A KUBE-SVC-IKIIGXZ2IBFIBYI6 -m comment --comment "namingthings/simpleservice:" -m statistic --mode random --probability 0.50000000000 -j KUBE-SEP-ASIN52LB5SMYF6KR
+-A KUBE-SVC-IKIIGXZ2IBFIBYI6 -m comment --comment "namingthings/simpleservice:" -j KUBE-SEP-RP53IYKEFRDLQANZ
+```
+
+如图：  
+![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/svc-route.png) 
+
+参考：  
+
+ - https://kubernetes.io/docs/concepts/cluster-administration/networking/
+ - https://blog.openshift.com/kubernetes-services-by-example/
+ - https://kubernetes.io/docs/concepts/services-networking/service/
+ 
 ### Pod的生命周期以及Liveness和Readiness
 
 ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/pod-lifecycle.png) 
@@ -86,10 +117,88 @@
 
  - https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/
  - https://kubernetes.io/docs/tasks/configure-pod-container/attach-handler-lifecycle-event/
+
+ 
+### log
+
+ - 架构
+![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/log-1.png)  
+ - streaming
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: counter
+spec:
+  containers:
+  - name: count
+    image: busybox
+    args:
+    - /bin/sh
+    - -c
+    - >
+      i=0;
+      while true;
+      do
+        echo "$i: $(date)" >> /var/log/1.log;
+        echo "$(date) INFO $i" >> /var/log/2.log;
+        i=$((i+1));
+        sleep 1;
+      done
+    volumeMounts:
+    - name: varlog
+      mountPath: /var/log
+  - name: count-log-1
+    image: busybox
+    args: [/bin/sh, -c, 'tail -n+1 -f /var/log/1.log']
+    volumeMounts:
+    - name: varlog
+      mountPath: /var/log
+  - name: count-log-2
+    image: busybox
+    args: [/bin/sh, -c, 'tail -n+1 -f /var/log/2.log']
+    volumeMounts:
+    - name: varlog
+      mountPath: /var/log
+  volumes:
+  - name: varlog
+    emptyDir: {}
+```
+Now when you run this pod, you can access each log stream separately by running the following commands:  
+
+```
+$ kubectl logs counter count-log-1
+0: Mon Jan  1 00:00:00 UTC 2001
+1: Mon Jan  1 00:00:01 UTC 2001
+2: Mon Jan  1 00:00:02 UTC 2001
+...
+
+$ kubectl logs counter count-log-2
+Mon Jan  1 00:00:00 UTC 2001 INFO 0
+Mon Jan  1 00:00:01 UTC 2001 INFO 1
+Mon Jan  1 00:00:02 UTC 2001 INFO 2
+...
+```
+
+
+参考：  
+
+- https://github.com/kubernetes/kubernetes/blob/master/cluster/addons/fluentd-elasticsearch/fluentd-es-configmap.yaml
+- https://kubernetes.io/docs/concepts/cluster-administration/logging/ 
+ 
+### 服务网格（Service Mesh）& Istio
+
+![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/istio-control-plane.png)  
+
+ 
+参考：  
+ 
+ -  https://istio.io/docs/concepts/what-is-istio/
  
  
 ### Knative
-目标： 技术上基于K8s CRD，实现serverless 平台，自动完成代码到容器的构建。
+目标： 技术上基于K8s CRD，实现serverless 平台 (function as a service)，自动完成代码到容器的构建。
 
 ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/knative.png) 
 
@@ -105,14 +214,6 @@
  - https://github.com/knative
  - https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/
 
-### 服务网格（Service Mesh）& Istio
-
-![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/istio-control-plane.png)  
-
- 
-参考：  
- 
- -  https://istio.io/docs/concepts/what-is-istio/
 
 ## HelmChart 基础
 ### 从一个例子开始
