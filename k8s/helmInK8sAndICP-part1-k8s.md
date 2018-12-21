@@ -1,4 +1,4 @@
-# Kubernetes and ICP (IBM Cloud Private) 1 - (K8s)
+# Kubernetes and ICP (IBM Cloud Private) 1 - K8s
 
 本文基于IBM Cloud Private(ICP)3.1.0和ICP自带的Kubernetes 1.11.1.  
 参考： https://www.ibm.com/support/knowledgecenter/en/SSBS6K_3.1.0/getting_started/whats_new.html
@@ -161,9 +161,9 @@ K8s提供了一些Hook的方法可以在不同阶段执行一些定制的代码�
 ```
 
 其中 POD-NAME， NAMESPACE， CONTAINER-NAME 我猜大家都知道是什么意思。收集log的是跑在每个节点上的fluentd， 什么是fluentd？
-```
+
 Fluentd as a agent can collect all the logs, will also adds some Kubernetes-specific information to the logs. For example, it adds labels to each log message to give the logs some metadata which can be critical in better managing the flow of logs across different sources and endpoints. 
-```
+
 
 下面是几种应用模式。。。  
 

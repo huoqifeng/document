@@ -1,4 +1,4 @@
-# Kubernetes and ICP (IBM Cloud Private) 2 - (Helm)
+# Kubernetes and ICP (IBM Cloud Private) 2 - Helm Chart
 
 本文基于IBM Cloud Private(ICP)3.1.0和ICP自带的Kubernetes 1.11.1.  
 参考： https://www.ibm.com/support/knowledgecenter/en/SSBS6K_3.1.0/getting_started/whats_new.html
