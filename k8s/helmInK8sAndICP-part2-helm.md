@@ -16,6 +16,9 @@
  - Chart.yaml  
    Helm Chart的信息，比如名字，版本，维护者。
  - README.md
+ - LICENSE
+ - NOTES.txt  
+   输出notes
  - requirements.yaml  
    定义依赖的Chart。
  - values.yaml  
@@ -61,6 +64,7 @@
  - https://github.com/helm/helm/tree/master/docs   
  - https://github.com/helm/helm/tree/master/docs/chart_best_practices  
  - https://github.com/ibm/charts  
+ - https://whmzsu.github.io/helm-doc-zh-cn/
 
 ## 在ICP上的准备工做
 ### 安装ICP
