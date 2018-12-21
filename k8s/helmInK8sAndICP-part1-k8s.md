@@ -33,7 +33,7 @@
    The only rest server run on master, all request must reach to apiserver, and api server communicate with etcd.
  - kubelet  
    A Kubernetes worker that runs on each minion. It watches Pods via kube-apiserver and looks for Pods that are assigned to itself. It then syncs these Pods if possible. The procedure of Syncing Pods requires resource provisioning (i.e. mount volume), talking with container runtime to manage Pod life cycle (i.e. pull images, run containers, check container health, delete containers and garbage collect containers)  
- - kube-proxy
+ - kube-proxy  
    A network proxy that reflects Service (defined in Kubernetes REST API) that runs on each node. Watches Service and Endpoint objects from kube-apiserver and modifies the underlying kernel iptable for routing and redirection.  
  - etcd  
    基于Raft一致性协议的高可靠的KV存储系统 vs ZooKeeper 基于一致性协议Zab（Zookeeper Atomic Broadcas）
@@ -75,7 +75,7 @@
  - 网络.  
  docker 通过 bridge 和 veth pair 能保证容器间的网络通信和基于IP的连接，kubernetes借助calico，flannel等网络层，实现跨node的containers的网络通信以及基于IP的连接，也就是说，所有K8s Clusters上的pod ip都在一个网络上，比如：
   
- ![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/network-openswitch.png) 
+ ![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/network-open-switch.png) 
  ![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/network-direct-connect.png)
   
  - 服务(Service)和路由  
