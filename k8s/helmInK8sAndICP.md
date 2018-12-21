@@ -123,9 +123,17 @@
  
 ### logging
 
- - normal
+all containers log to stdout and stderr are written to nodes path like:  
+```
+/var/log/containers/POD-NAME_NAMESPACE_CONTAINER-NAME.log
+```
+
+Fluentd as a agent can collect all the logs, will also adds some Kubernetes-specific information to the logs. For example, it adds labels to each log message to give the logs some metadata which can be critical in better managing the flow of logs across different sources and endpoints. 
+
+ - Use a node-level logging agent that runs on every node.  
 ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/log-1.png)  
- - streaming to different log file
+
+ - Using a sidecar container with the logging agent
 
 ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/log-2.png) 
 
@@ -185,7 +193,7 @@ Mon Jan  1 00:00:02 UTC 2001 INFO 2
 ...
 ```
 
- - Sidecar container with a logging agent  
+ - Include a dedicated sidecar container for logging in an application pod.  
  
 ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/log-3.png) 
 configure fluentd:  
@@ -262,12 +270,16 @@ spec:
       name: fluentd-config
  ```
 
+ - Exposing logs directly from the application. 
 
+![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/log-4.png)
 
 参考：  
 
 - https://github.com/kubernetes/kubernetes/blob/master/cluster/addons/fluentd-elasticsearch/fluentd-es-configmap.yaml
 - https://kubernetes.io/docs/concepts/cluster-administration/logging/ 
+- https://timber.io/blog/collecting-application-logs-on-kubernetes/
+- https://docs.fluentd.org/v0.12/articles/routing-examples 
  
 ### 服务网格（Service Mesh）& Istio
 
