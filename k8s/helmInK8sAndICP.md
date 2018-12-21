@@ -121,11 +121,13 @@
  - https://kubernetes.io/docs/tasks/configure-pod-container/attach-handler-lifecycle-event/
 
  
-### log
+### logging
 
- - 架构
+ - normal
 ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/log-1.png)  
- - streaming
+ - streaming to different log file
+
+![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/log-2.png) 
 
 ```
 apiVersion: v1
@@ -183,6 +185,84 @@ Mon Jan  1 00:00:02 UTC 2001 INFO 2
 ...
 ```
 
+ - Sidecar container with a logging agent  
+ 
+![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/log-3.png) 
+configure fluentd:  
+
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config
+data:
+  fluentd.conf: |
+    <source>
+      type tail
+      format none
+      path /var/log/1.log
+      pos_file /var/log/1.log.pos
+      tag count.format1
+    </source>
+
+    <source>
+      type tail
+      format none
+      path /var/log/2.log
+      pos_file /var/log/2.log.pos
+      tag count.format2
+    </source>
+
+    <match **>
+      type google_cloud
+    </match>
+```
+
+configure pod:  
+ 
+```
+ apiVersion: v1
+kind: Pod
+metadata:
+  name: counter
+spec:
+  containers:
+  - name: count
+    image: busybox
+    args:
+    - /bin/sh
+    - -c
+    - >
+      i=0;
+      while true;
+      do
+        echo "$i: $(date)" >> /var/log/1.log;
+        echo "$(date) INFO $i" >> /var/log/2.log;
+        i=$((i+1));
+        sleep 1;
+      done
+    volumeMounts:
+    - name: varlog
+      mountPath: /var/log
+  - name: count-agent
+    image: k8s.gcr.io/fluentd-gcp:1.30
+    env:
+    - name: FLUENTD_ARGS
+      value: -c /etc/fluentd-config/fluentd.conf
+    volumeMounts:
+    - name: varlog
+      mountPath: /var/log
+    - name: config-volume
+      mountPath: /etc/fluentd-config
+  volumes:
+  - name: varlog
+    emptyDir: {}
+  - name: config-volume
+    configMap:
+      name: fluentd-config
+ ```
+
+
 
 参考：  
 
@@ -199,7 +279,7 @@ Mon Jan  1 00:00:02 UTC 2001 INFO 2
  -  https://istio.io/docs/concepts/what-is-istio/
  
  
-### Knative
+### Serverless & Knative
 目标： 技术上基于K8s CRD，实现serverless 平台 (function as a service)，自动完成代码到容器的构建。
 
 ![Helm Repositories](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/knative.png) 
