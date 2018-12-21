@@ -176,8 +176,8 @@ docker > restart
 ### 修改image repo
 这时候images都上传到ICP了，再来看`kubectl get po` pod还是有错误，因为image的URL发生了变化，我们再来改一下`Deployment`的`image url`.  
 执行下面的命令：   
-`kubectl edit deploy ibm-nodejs-sample-nodejssample-nodejs -n default`
-替换下面的响应的`image url`:  
+`kubectl edit deploy ibm-nodejs-sample-nodejssample-nodejs -n default`  
+替换下面的相应的`image url`:  
 `mycluster.icp:8500/ibmcom/icp-nodejs-sample:8`.  
 同时修改下面的几个变量：  
 `- name: CLUSTER_CA_DOMAIN    
@@ -195,7 +195,8 @@ ibm-nodejs-sample-nodejssample-nodejs-699d45cf49-274l8   1/1     Running   0    
 ```
 再到ICP的管理界面：  
 ![images nodejs](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/release-to-launch.png).  
-点击 `launch` 就打开了这个sample app.  
+点击 `launch`   
+就打开了这个sample app.  
 ![images nodejs](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/helmInK8sAndICP.imgs/nodejs-launch.png)	
 
 我们可以看到，这里IP地址是ICP Master的IP，port是前面创建的service的port。 
@@ -211,7 +212,7 @@ NAME            STATUS   ROLES                          AGE   VERSION          L
 
 ```
 
-我们看到节点`172.16.26.216`的标签包含`beta.kubernetes.io/arch=amd64`, 节点`172.16.32.185`的标签包含`beta.kubernetes.io/arch=s390x`,这是因为216节点是x86架构，185节点是s390架构，他们在加入K8s cluster的时候会被自动加上响应的arch标签。  
+我们看到节点`172.16.26.216`的标签包含`beta.kubernetes.io/arch=amd64`, 节点`172.16.32.185`的标签包含`beta.kubernetes.io/arch=s390x`,这是因为216节点是x86架构，185节点是s390架构，他们在加入K8s cluster的时候会被自动加上相应的arch标签。  
 
 现在我们就用这个标签，通过修改deployment来在创建pod的时候选择worker node。  
 通过下面的命令编辑Deployment：  
