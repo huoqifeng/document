@@ -130,7 +130,7 @@ docker > restart
  - 登陆到ICP Master			    
 `cloudctl login -a https://172.16.26.215:8443 --skip-ssl-validation`  
   
- - 上传Chart.  	  		
+ - 上传Chart  	  		
 `cloudctl catalog load-chart --archive ibm-nodejs-sample-1.2.1.tgz`
 
 
@@ -316,8 +316,8 @@ ibm-nodejs-sample-nodejssample-nodejs-699d45cf49-qwk9v   1/1     Running   0    
  
 
 
-### 为ICP制作ppa
-为什么需要PPA？我们前面的例子也碰到了，当ICP的节点不能访问互联网的时候，必须手工的把image上传到ICP本地的registry，这带来很多不必要的麻烦，所以ICP提供了另外一种打包方式 -- PPA(Packaged Passport Advantage)， 通过PPA，Helm Chart和Docker Image可以被打包到一个压缩文件里面，比如：  
+### 为ICP制作ppa (PassPort Advantage archive)
+为什么需要PPA？我们前面的例子也碰到了，当ICP的节点不能访问互联网的时候，必须手工的把image上传到ICP本地的registry，这带来很多不必要的麻烦，所以ICP提供了另外一种打包方式 -- PPA(PassPort Advantage archive)， 通过PPA，Helm Chart和Docker Image可以被打包到一个压缩文件里面，比如：  
 
  - 打包命令：  
 `cloudctl catalog create-archive`
