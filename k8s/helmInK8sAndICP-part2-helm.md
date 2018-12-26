@@ -305,6 +305,17 @@ ibm-nodejs-sample-nodejssample-nodejs-699d45cf49-274l8   1/1     Running   0    
 ibm-nodejs-sample-nodejssample-nodejs-699d45cf49-qwk9v   1/1     Running   0          1d
 
 ```
+
+### 分发安全的Helm Chart(RBAC -- Role Based Access Control)
+
+参考：  
+
+ - https://whmzsu.github.io/helm-doc-zh-cn/quickstart/rbac-zh_cn.html
+ - https://docs.bitnami.com/kubernetes/how-to/configure-rbac-in-your-kubernetes-cluster/
+ - https://kubernetes.io/docs/reference/access-authn-authz/rbac/#service-account-permissions
+ 
+
+
 ### 为ICP制作ppa
 为什么需要PPA？我们前面的例子也碰到了，当ICP的节点不能访问互联网的时候，必须手工的把image上传到ICP本地的registry，这带来很多不必要的麻烦，所以ICP提供了另外一种打包方式 -- PPA(Packaged Passport Advantage)， 通过PPA，Helm Chart和Docker Image可以被打包到一个压缩文件里面，比如：  
 
