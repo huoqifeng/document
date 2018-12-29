@@ -118,9 +118,19 @@ A larger challenge is managing stateful applications, like databases, caches, an
  
 ### Replica Set
 
+The figure below illustrates the three main components to be created, and where they would be logically placed in a full application deployment, including:
+
+  - The headless service
+  - The StatefulSet, including the MongoDB containers and associated persistent volume claims
+  - The Persistent Volumes (IBM Cloud File Storage)
+
 ![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/mongodbInK8s.imgs/mongo-k8s-replicaset.png) 
 
+> following figure shows the complete replica set. Note that even if running the configuration shown in Figure 3 on a Kubernetes cluster of three or more nodes, Kubernetes may (and often will) schedule two or more MongoDB replica set members on the same host. This is because Kubernetes views the three pods as belonging to three independent services.
+
 ![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/mongodbInK8s.imgs/mongo-k8s-replicaset-pods.png) 
+
+> To increase redundancy (within the zone), an additional headless service can be created. The new service provides no capabilities to the outside world (and will not even have an IP address) but it serves to inform Kubernetes that the three MongoDB pods form a service and so Kubernetes will attempt to schedule them on different nodes.
 
 ![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/mongodbInK8s.imgs/mongo-k8s-replicaset-svc.png) 
 
