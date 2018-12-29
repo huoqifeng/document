@@ -113,6 +113,7 @@ A larger challenge is managing stateful applications, like databases, caches, an
 参考：
 
  - https://developer.ibm.com/recipes/tutorials/deploy-mongodb-into-ibm-cloud-private/
+ - https://github.com/IBM/charts/tree/master/stable/ibm-mongodb-dev 
  
  
 ### Replica Set
@@ -256,8 +257,11 @@ NAME                 KIND
 my-new-cron-object   CronTab.v1.stable.example.com
 ```
 
-要让CRD正确的工作，你还需要写一个Custom Controller，按照这个例子：
+要让CRD正确的工作，你还需要写一个Custom Controller，创建一个Custom Controller， 可以按照这个例子
+
+```
 https://github.com/kubernetes/sample-controller 
+```
 
 Custom Controller所做的事情就是通过Recouncile让声明的资源达到声明的状态，如下图。。。
 
@@ -269,6 +273,7 @@ Custom Controller所做的事情就是通过Recouncile让声明的资源达到�
  - https://k8smeetup.github.io/docs/tasks/access-kubernetes-api/extend-api-custom-resource-definitions/
  - https://github.com/kubernetes/sample-controller
  - https://docs.openshift.com/container-platform/3.7/admin_guide/custom_resource_definitions.html
+ - https://github.com/kubernetes/sample-controller 
  
   
 ### Operator framework
@@ -318,6 +323,35 @@ The Manager will automatically register the scheme for all custom resources defi
  - https://docs.opsmanager.mongodb.com/current/tutorial/install-k8s-operator/
  - https://github.com/mongodb/mongodb-enterprise-kubernetes
  - https://github.com/operator-framework/awesome-operators
+
+ 
+  
+## Cloud Based MongoDB -- current status
+
+### AWS
+
+参考：
+
+ - https://docs.aws.amazon.com/quickstart/latest/mongodb/architecture.html
+ 
+### Azure
+
+参考：
+
+ - https://azure.microsoft.com/en-us/resources/templates/mongodb-sharding-centos/
+ - https://azure.microsoft.com/en-us/resources/templates/mongodb-replica-set-centos/
+ 
+### GCE
+
+参考：
+
+ - https://cloud.google.com/solutions/deploy-mongodb 
+  
+### IBM Compose
+ 
+参考：
+ 
+ - https://www.compose.com/databases/mongodb  
 
 
 
