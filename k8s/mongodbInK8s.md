@@ -158,23 +158,165 @@ K8s 的pod如下：
 
 ### CRD
 
+- 自定义资源 (CRD).  
+
+一种资源就是Kubernetes API中的一个端点，它存储着某种API 对象的集合。 
+例如，内建的pods资源包含Pod对象的集合。
+
+自定义资源是对Kubernetes API的一种扩展，它对于每一个Kubernetes集群不一定可用。
+换句话说，它代表一个特定Kubernetes的定制化安装。
+
+在一个运行中的集群内，自定义资源可以通过动态注册出现和消失，集群管理员可以独立于集群本身更新自定义资源。
+一旦安装了自定义资源，用户就可以通过kubectl创建和访问他的对象，就像操作内建资源pods那样。
+
+- 自定义控制器.  
+
+自定义资源本身让你简单地存储和索取结构化数据。
+只有当和控制器结合后，他们才成为一种真正的declarative API。 控制器将结构化数据解释为用户所期望状态的记录，并且不断地采取行动来实现和维持该状态。
+
+定制化控制器是用户可以在运行中的集群内部署和更新的一个控制器，它独立于集群本身的生命周期。 定制化控制器可以和任何一种资源一起工作，当和定制化资源结合使用时尤其有效。
+
+- 使用CRD(CustomResourceDefinitions)扩展Kubernetes API
+
+当创建一个新的自定义资源定义（CRD）时，Kubernetes API Server 通过创建一个新的RESTful资源路径进行应答，无论是在命名空间还是在集群范围内，正如在CRD的scope域指定的那样。
+与现有的内建对象一样，删除一个命名空间将会删除该命名空间内所有的自定义对象。
+CRD本身并不区分命名空间，对所有的命名空间可用。
+
+例如，如果将以下的CRD保存到resourcedefinition.yaml中:
+
+```
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  # name must match the spec fields below, and be in the form: <plural>.<group>
+  name: crontabs.stable.example.com
+spec:
+  # group name to use for REST API: /apis/<group>/<version>
+  group: stable.example.com
+  # version name to use for REST API: /apis/<group>/<version>
+  version: v1
+  # either Namespaced or Cluster
+  scope: Namespaced
+  names:
+    # plural name to be used in the URL: /apis/<group>/<version>/<plural>
+    plural: crontabs
+    # singular name to be used as an alias on the CLI and for display
+    singular: crontab
+    # kind is normally the CamelCased singular type. Your resource manifests use this.
+    kind: CronTab
+    # shortNames allow shorter string to match your resource on the CLI
+    shortNames:
+    - ct
+```
+
+创建它：
+
+```
+kubectl create -f resourcedefinition.yaml
+```
+
+然后一个新的区分命名空间的RESTful API 端点被创建了：
+
+```
+/apis/stable.example.com/v1/namespaces/*/crontabs/...
+```
+
+然后可以使用此端点URL来创建和管理自定义对象。 这些对象的kind就是你在上面创建的CRD中指定的CronTab对象。
+
+
+在CRD对象创建完成之后，你可以创建自定义对象了。自定义对象可以包含自定义的字段。这些字段可以包含任意的JSON。
+以下的示例中，在一个自定义对象CronTab种类中设置了cronSpec和image字段。这个CronTab种类来自于你在上面创建的CRD对象。
+
+```
+apiVersion: "stable.example.com/v1"
+kind: CronTab
+metadata:
+  name: my-new-cron-object
+spec:
+  cronSpec: "* * * * /5"
+  image: my-awesome-cron-image
+```
+
+创建它：
+
+```
+kubectl create -f my-crontab.yaml
+```
+
+你可以使用kubectl来管理你的CronTab对象。例如：
+
+```
+kubectl get crontab
+```
+
+应该打印这样的一个列表：
+
+```
+NAME                 KIND
+my-new-cron-object   CronTab.v1.stable.example.com
+```
+
+要让CRD正确的工作，你还需要写一个Custom Controller，按照这个例子：
+https://github.com/kubernetes/sample-controller 
+
+Custom Controller所做的事情就是通过Recouncile让声明的资源达到声明的状态，如下图。。。
+
+![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/mongodbInK8s.imgs/k8s-crd-customcontroller.png)
+
 参考：
  
  - https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/
+ - https://k8smeetup.github.io/docs/tasks/access-kubernetes-api/extend-api-custom-resource-definitions/
+ - https://github.com/kubernetes/sample-controller
+ - https://docs.openshift.com/container-platform/3.7/admin_guide/custom_resource_definitions.html
+ 
   
 ### Operator framework
+
+- Operators are Kubernetes applications
+
+ > Conceptually, an Operator takes human operational knowledge and encodes it into software that is more easily packaged and shared with consumers. Think of an Operator as an extension of the software vendor’s engineering team that watches over your Kubernetes environment and uses its current state to make decisions in milliseconds. Operators follow a maturity model that ranges from basic functionality to having specific logic for an application. Advanced Operators are designed to handle upgrades seamlessly, react to failures automatically, and not take shortcuts, like skipping a software backup process to save time.
+
+- The Operator Framework: Introducing the SDK, Lifecycle Management, and Metering
+   
+   1) Operator SDK: 
+
+ Enables developers to build Operators based on their expertise without requiring knowledge of Kubernetes API complexities.
+ 
+   2) Operator Lifecycle Management: 
+
+ Oversees installation, updates, and management of the lifecycle of all of the Operators (and their associated services) running across a Kubernetes cluster.
+ 
+   3) Operator Metering (joining in the coming months): 
+
+ Enables usage reporting for Operators that provide specialized services.
+ 
+ 
+- Steps to create a new operator
+ 
+   1) Create a new project.  
+   2) Manager.  
+   > The main program for the operator cmd/manager/main.go initializes and runs the Manager.
+The Manager will automatically register the scheme for all custom resources defined under pkg/apis/... and run all controllers under pkg/controller/....
+
+   3) Add a new Custom Resource Definition   
+   4) Define the resource spec and status.   
+   5) Add a new Controller
+ 
 
 参考：
 
   - https://coreos.com/blog/introducing-operator-framework
   - https://github.com/operator-framework/getting-started
+ 
   
 
-### Mongodb operator
+### MongoDB operator
 
 参考：
 
  - https://docs.opsmanager.mongodb.com/current/tutorial/install-k8s-operator/
+ - https://github.com/mongodb/mongodb-enterprise-kubernetes
  - https://github.com/operator-framework/awesome-operators
 
 
