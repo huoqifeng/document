@@ -328,10 +328,66 @@ The Manager will automatically register the scheme for all custom resources defi
 
 ### MongoDB operator
 
+实现安装了MongoDB Operator之后可以这样来部署 MongoDBCluster：
+
+- Sample for shard
+
+
+```
+apiVersion: mongodb.com/v1
+kind: MongoDbShardedCluster
+metadata:
+  name: my-sharded-cluster
+  namespace: mongodb
+spec:
+  shardCount: 2
+  mongodsPerShardCount: 3
+  mongosCount: 2
+  configServerCount: 3
+  version: 4.0.0
+
+  # Before you create this object, you'll need to create a project ConfigMap and a
+  # credentials Secret. For instructions on how to do this, please refer to our
+  # documentation, here:
+  # https://docs.opsmanager.mongodb.com/current/tutorial/install-k8s-operator
+  project: my-project
+  credentials: my-credentials
+
+  # This flag allows the creation of pods without persistent volumes. This is for
+  # testing only, and must not be used in production. 'false' will disable
+  # Persistent Volume Claims. The default is 'true'
+  persistent: false
+```
+
+- Sample for replacSet
+
+```
+apiVersion: mongodb.com/v1
+kind: MongoDbReplicaSet
+metadata:
+  name: my-replica-set
+  namespace: mongodb
+spec:
+  members: 3
+  version: 4.0.0
+
+  # Before you create this object, you'll need to create a project ConfigMap and a
+  # credentials Secret. For instructions on how to do this, please refer to our
+  # documentation, here:
+  # https://docs.opsmanager.mongodb.com/current/tutorial/install-k8s-operator
+  project: my-project
+  credentials: my-credentials
+
+  # This flag allows the creation of pods without persistent volumes. This is for
+  # testing only, and must not be used in production. 'false' will disable
+  # Persistent Volume Claims. The default is 'true'
+  persistent: false
+```
+
 参考：
 
  - https://docs.opsmanager.mongodb.com/current/tutorial/install-k8s-operator/
- - https://github.com/mongodb/mongodb-enterprise-kubernetes
+ - https://github.com/mongodb/mongodb-enterprise-kubernetes (Beta)
  - https://github.com/operator-framework/awesome-operators
 
  
