@@ -330,28 +330,124 @@ The Manager will automatically register the scheme for all custom resources defi
 
 ### AWS
 
+AWS 支持VM Based MongoDB ReplicaSet/Sarding via VPC (Virtul Private Cloud), 通过QuickStart可以自动部署ReplicaSet，但是要部署Sharding，有一些手工的工作要做。
+
+![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/mongodbInK8s.imgs/mongodb-architecture-on-aws.png)
+
+
+The following AWS components are deployed and configured as part of this reference deployment:
+
+ - A VPC configured with public and private subnets across three Availability Zones.*
+
+ - In the public subnets, NAT gateways to allow outbound internet connectivity for resources (MongoDB instances) in the private subnets. (For more information, see the Amazon VPC Quick Start.)*
+
+ - In the public subnets, bastion hosts in an Auto Scaling group with Elastic IP addresses to allow inbound Secure Shell (SSH) access. One bastion host is deployed by default, but this number is configurable. (For more information, see the Linux bastion host Quick Start.)*
+
+ - An AWS Identity and Access Management (IAM) instance role with fine-grained permissions for access to AWS services necessary for the deployment process.
+
+ - Security groups to enable communication within the VPC and to restrict access to only necessary protocols and ports.
+
+ - In the private subnets, a customizable MongoDB cluster with the option of running standalone or in replica sets, along with customizable Amazon EBS storage. The Quick Start launches each member of the replica set in a different Availability Zone. However, if you choose an AWS Region that doesn’t provide three or more Availability Zones, the Quick Start reuses one of the zones to create the third subnet.
+
+ 
+The Quick Start launches all the MongoDB-related nodes in the private subnet, so the nodes are accessed by using SSH to connect to the bastion hosts. Instead of using a remote access CIDR for each MongoDB instance, the deployment requires a security group ID of the bastion hosts so remote access can be centrally controlled. If you launch the Quick Start for a new VPC, the bastion security group is created for you. If you launch the Quick Start in an existing VPC, you must create a security group for your bastion hosts or use one that already exists.
+
+![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/mongodbInK8s.imgs/mongodb-cluster-with-three-replica-sets.png)
+
 参考：
 
  - https://docs.aws.amazon.com/quickstart/latest/mongodb/architecture.html
+ - https://docs.aws.amazon.com/quickstart/latest/mongodb/step2.html
+ 
  
 ### Azure
 
+Azure support VM based mongo both for ReplicaSet and Sharding, for example, following template create cluster on centos:
+
+ - ReplicaSet
+ 
+```
+azure config mode arm
+azure group deployment create <my-resource-group> <my-deployment-name> --template-uri https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/mongodb-replica-set-centos/azuredeploy.json
+```
+
+ - Sharding
+ 
+```
+azure config mode arm
+azure group deployment create <my-resource-group> <my-deployment-name> --template-uri https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/mongodb-sharding-centos/azuredeploy.json
+```
+
+ - Azure Cosmos DB's API for MongoDB 
+
+![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/mongodbInK8s.imgs/cosmosdb-mongodb.png)
+
+Besides DB API, you can also run Spark on the DB node to do some map-reduce query...
+
 参考：
 
+ - https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/mongodb-sharding-centos/azuredeploy.json
  - https://azure.microsoft.com/en-us/resources/templates/mongodb-sharding-centos/
  - https://azure.microsoft.com/en-us/resources/templates/mongodb-replica-set-centos/
+ - https://docs.microsoft.com/en-us/azure/cosmos-db/mongodb-introduction
+ - https://docs.microsoft.com/en-us/azure/cosmos-db/connect-mongodb-account
+ - https://docs.microsoft.com/en-us/azure/cosmos-db/create-mongodb-nodejs
  
-### GCE
+ 
+### GCE (Atalas)
+
+**Kubernetes based**
+
+Example:
+
+I will be using the Google Cloud Shell within the Google Cloud control panel to manage my deployment. The cloud shell comes with all required applications and tools installed to allow you to deploy the Docker image I uploaded to the image registry without installing any additional software on my local workstation.
+
+Now I will create the kubernetes cluster where the image will be deployed that will help bring our application to production. I will include three nodes to ensure uptime of our app.
+
+Set up our environment first:
+
+```
+export PROJECT_ID="jaygordon-mongodb"
+gcloud config set project $PROJECT_ID
+gcloud config set compute/zone us-central1-b
+```
+
+Launch the cluster
+
+```
+gcloud container clusters create mern-crud --num-nodes=3
+```
+
+When completed, you will have a three node kubernetes cluster visible in your control panel. After a few minutes, the console will respond with the following output:
+
+```
+Creating cluster mern-crud...done.
+Created [https://container.googleapis.com/v1/projects/jaygordon-mongodb/zones/us-central1-b/clusters/mern-crud].
+To inspect the contents of your cluster, go to: https://console.cloud.google.com/kubernetes/workload_/gcloud/us-central1-b/mern-crud?project=jaygordon-mongodb
+kubeconfig entry generated for mern-crud.
+NAME       LOCATION       MASTER_VERSION  MASTER_IP       MACHINE_TYPE   NODE_VERSION  NUM_NODES  STATUS
+mern-crud  us-central1-b  1.8.7-gke.1     35.225.138.208  n1-standard-1  1.8.7-gke.1   3          RUNNING
+```
+
+![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/mongodbInK8s.imgs/gce-atalas-1.png)
 
 参考：
 
+ - https://www.mongodb.com/blog/post/modern-distributed-application-deployment-with-kubernetes-and-mongodb-atlas
  - https://cloud.google.com/solutions/deploy-mongodb 
+ - https://console.cloud.google.com/marketplace/details/click-to-deploy-images/mongodb?pli=1
+ - https://www.mongodb.com/cloud/atlas/mongodb-google-cloud
   
 ### IBM Compose
+
+VM Based, Auto scale vertically.
  
 参考：
  
  - https://www.compose.com/databases/mongodb  
+ - https://help.compose.com/docs/mongodb-on-compose
+ - https://help.compose.com/docs/compose-auto-scaling
+ - https://help.compose.com/docs/mongodb-resources-and-scaling
 
 
 
