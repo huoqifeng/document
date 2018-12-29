@@ -1,6 +1,6 @@
 # MongoDB in Kubernetes （In Progress...）
 
-## What's Mongodb
+## What's MongoDB
 
 MongoDB 是一个基于分布式文件存储的数据库。由C++语言编写。旨在为WEB应用提供可扩展的高性能数据存储解决方案。
 
@@ -121,7 +121,7 @@ A larger challenge is managing stateful applications, like databases, caches, an
 
 ![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/mongodbInK8s.imgs/mongo-k8s-replicaset-pods.png) 
 
-![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/mongodbInK8s.imgs/momgo-k8s-replicaset-svc.png) 
+![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/mongodbInK8s.imgs/mongo-k8s-replicaset-svc.png) 
 
 
 参考：
@@ -143,7 +143,7 @@ This tallies up with what Kubernetes was asked to be deployed, namely:
 
 K8s 的pod如下：
  
- ![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/mongodbInK8s.imgs/momgo-k8s-shard-1.png) 
+ ![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/mongodbInK8s.imgs/mongo-k8s-shard-1.png) 
 
 参考：
 
