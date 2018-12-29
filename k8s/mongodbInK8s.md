@@ -296,15 +296,15 @@ Custom Controller所做的事情就是通过Recouncile让声明的资源达到�
    
    1) Operator SDK: 
 
- Enables developers to build Operators based on their expertise without requiring knowledge of Kubernetes API complexities.
+   > Enables developers to build Operators based on their expertise without requiring knowledge of Kubernetes API complexities.
  
    2) Operator Lifecycle Management: 
 
- Oversees installation, updates, and management of the lifecycle of all of the Operators (and their associated services) running across a Kubernetes cluster.
+   > Oversees installation, updates, and management of the lifecycle of all of the Operators (and their associated services) running across a Kubernetes cluster.
  
    3) Operator Metering (joining in the coming months): 
 
- Enables usage reporting for Operators that provide specialized services.
+   > Enables usage reporting for Operators that provide specialized services.
  
  
 - Steps to create a new operator
