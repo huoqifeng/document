@@ -384,6 +384,12 @@ spec:
   persistent: false
 ```
 
+### Operators:
+ - (Official)	https://github.com/mongodb/mongodb-enterprise-kubernetes 
+ - https://github.com/kbst/mongodb (35 stars)
+ - https://github.com/Ultimaker/k8s-mongo-operator (GPL, 9 stars)
+
+
 参考：
 
  - https://docs.opsmanager.mongodb.com/current/tutorial/install-k8s-operator/
