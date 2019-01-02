@@ -1,4 +1,4 @@
-# MongoDB in Kubernetes （In Progress...）
+# MongoDB in Kubernetes
 
 ## What's MongoDB
 
