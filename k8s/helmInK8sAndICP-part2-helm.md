@@ -333,6 +333,7 @@ ibm-nodejs-sample-nodejssample-nodejs-699d45cf49-qwk9v   1/1     Running   0    
 参考：  
 
 - http://icp-content-playbook.rch.stglabs.ibm.com/publishing-content/
+- https://developer.ibm.com/linuxonpower/ibm-cloud-private-on-power/isv-guide/
 
 
 
