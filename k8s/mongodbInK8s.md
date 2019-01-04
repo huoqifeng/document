@@ -392,6 +392,7 @@ spec:
 
 参考：
 
+ - https://www.mongodb.com/blog/post/introducing-mongodb-enterprise-operator-for-kubernetes-openshift
  - https://docs.opsmanager.mongodb.com/current/tutorial/install-k8s-operator/
  - https://github.com/mongodb/mongodb-enterprise-kubernetes (Beta)
  - https://github.com/operator-framework/awesome-operators
