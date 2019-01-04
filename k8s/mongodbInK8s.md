@@ -385,9 +385,9 @@ spec:
 ```
 
 ### Operators:
- - (Official)	https://github.com/mongodb/mongodb-enterprise-kubernetes 
- - https://github.com/kbst/mongodb (35 stars)
- - https://github.com/Ultimaker/k8s-mongo-operator (GPL, 9 stars)
+ - https://github.com/mongodb/mongodb-enterprise-kubernetes (Official, Commercial)
+ - https://github.com/kbst/mongodb (replicaSets only, python, 35 stars)
+ - https://github.com/Ultimaker/k8s-mongo-operator (GPL, python, 9 stars)
 
 
 参考：
@@ -396,6 +396,10 @@ spec:
  - https://docs.opsmanager.mongodb.com/current/tutorial/install-k8s-operator/
  - https://github.com/mongodb/mongodb-enterprise-kubernetes (Beta)
  - https://github.com/operator-framework/awesome-operators
+
+**follow this guide to create a new operator**.  
+ 
+ - https://github.com/operator-framework/getting-started
 
  
   
