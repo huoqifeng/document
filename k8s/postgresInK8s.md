@@ -137,6 +137,11 @@ Stolon uses etcd or consul as a main storage for cluster state.
 
 ## K8s Operators 
 
+A comparration (stolon suggested but not does not mean others are not good):   
+
+https://blog.lwolf.org/post/how-to-deploy-ha-postgressql-cluster-on-kubernetes/
+https://devops.stackexchange.com/questions/4906/stolon-vs-crunchydata-for-ha-postgresql
+
 参考：
 
  - https://github.com/operator-framework/awesome-operators
