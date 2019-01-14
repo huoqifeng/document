@@ -137,7 +137,16 @@ Stolon uses etcd or consul as a main storage for cluster state.
 
 ## K8s Operators 
 
-A comparration (stolon suggested but not does not mean others are not good):   
+- Stolon is kubernetes deploy but no available operator, you can create a PostgreSQL via create StatefulSet, Deployment and Service yaml files directly. 
+- Patroni (MIT)
+  operator available
+  Maintained by company https://jobs.zalando.com
+  https://github.com/zalando-incubator
+  Pretty easy and traightforward. HA but no management support.
+- Crunchy Data (Apache 2.0)
+  operator available. 
+  Maintained by company: https://www.crunchydata.com/
+  https://crunchydata.github.io/postgres-operator/latest/installation/installation/
 
 https://blog.lwolf.org/post/how-to-deploy-ha-postgressql-cluster-on-kubernetes/
 https://devops.stackexchange.com/questions/4906/stolon-vs-crunchydata-for-ha-postgresql
