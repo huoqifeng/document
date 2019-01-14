@@ -388,6 +388,7 @@ spec:
  - https://github.com/mongodb/mongodb-enterprise-kubernetes (Official, Commercial)
  - https://github.com/kbst/mongodb (replicaSets only, python, 35 stars)
  - https://github.com/Ultimaker/k8s-mongo-operator (GPL, python, 9 stars)
+ - https://github.com/Percona-Lab/percona-server-mongodb-operator (Apache, Operator-SDK based, go, 15 stars)
 
 
 参考：

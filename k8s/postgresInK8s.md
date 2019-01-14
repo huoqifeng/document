@@ -66,6 +66,9 @@ Patroni (MIT)
 
 > Patroni is a template for you to create your own customized, high-availability solution using Python and - for maximum accessibility - a distributed configuration store like ZooKeeper, etcd or Consul. Database engineers, DBAs, DevOps engineers, and SREs who are looking to quickly deploy HA PostgreSQL in the datacenter - or anywhere else - will hopefully find it useful.
 
+![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/postgresInK8s.imgs/ha-patroni.png) 
+
+
 Crunchy (Apache 2.0)
 
 > Crunchy Container Suite provides Docker containers that enable rapid deployment of PostgreSQL, including administration and monitoring tools. Multiple styles of deploying PostgreSQL clusters are supported.
@@ -106,6 +109,8 @@ The project includes the following containers:
 
 - crunchy-pgrestore - provides a means of performing a restore of a dump from pg_dump or pg_dumpall via psql or pg_restore to a Postgres container database
 
+![img](https://raw.githubusercontent.com/huoqifeng/document/master/k8s/postgresInK8s.imgs/ha-crunchy1.png) 
+
 
 Stolon (Apache 2.0)
 
@@ -135,5 +140,6 @@ Stolon uses etcd or consul as a main storage for cluster state.
 参考：
 
  - https://github.com/operator-framework/awesome-operators
- - https://github.com/zalando-incubator/postgres-operator（Patroni, 300+ stars）
- - https://github.com/CrunchyData/postgres-operator（Crunchy, 500+ stars）
+ - https://github.com/zalando-incubator/postgres-operator （Patroni, 300+ stars）
+ - https://github.com/CrunchyData/postgres-operator （Crunchy, 500+ stars）
+ - https://github.com/sorintlab/stolon  (Stolon, 1800+ stars)
