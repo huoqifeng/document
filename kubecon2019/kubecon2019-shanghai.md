@@ -51,7 +51,7 @@ K8s的大规模部署已经不是问题，国内最大的Ali已经可以在单�
 
 安全方面，Intel 的SGX 推出了LibOS，通过重写glibc，让已经编译过的binary可以直接应用SGX的enclave而不需要改代码或者重新编译，这也许会是x86架构上一个在安全方面比较重量级的项目，但是局限性也很明显，第一是当系统调用比较多的时候性能估计会有不小的影响。第二是还不能很好的处理go程序。IBM也又一个关于secure image的session是一个research team做的，ms跟我们的ssc有些重叠的思路。。
 ![SGX](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/sgx-libos.jpg)
-![Secure](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/secure-image.jpg)
+![Secure](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/secure-image-ibm.jpg)
 
 
 今年Redhat带来一个eBPF的session，意图通过用户层的程序提高网络的性能，目标是达到DPDK的性能而又保留应用的灵活性，感兴趣的同学可以查一下原文。。。
@@ -66,7 +66,7 @@ IBM的session我还看了几个，一个是istio的最佳实践，一个是Hyper
 KubeEdge 是今年一个比较热门的话题，也许跟5G的到来有关。。。
 ![Edge](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/edge-arch.jpg)
 
-看Trend，多云和异构必将是未来的方向，加油吧，LinuxONE的小伙伴。。。
+看Trend，多云和异构必将是未来的方向，异构，就是俺们的机会啊，加油吧，LinuxONE的小伙伴们。。。
 
 
 相逢总是太短，两天的日程实际上只有一天半，周三中午conf就早早结束了，也许是组委会鼓励大家就近转转？也好，出来世博中心，几百米远就是世博的中国文化馆，俗称中国尊，就在地铁口。。。
