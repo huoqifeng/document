@@ -1,6 +1,8 @@
 ## kubecon2019-shanghai
 
 
+### 拜访客户
+
 为了充分准备周一跟客户的交流，周日下午坐东航的空客350到达上海，没拿太多行李，所以就选择坐地铁去酒店，地铁就在机场的地下一层，很方便，到银星皇冠假日大概30分钟左右，到酒店感觉比往常热闹很多，仔细看才知道原来这里是22届上海国际电影节的指定酒店，大堂里和楼梯里的确碰到一些人ms影视演员，也许不是很大牌，也许是本人不太八卦，总之，没有认识的 :-)
 
 ![Hotel](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/hotel.jpg)
@@ -11,6 +13,9 @@
 周一去CMB拜访客户，数据中心在浦东新区，离公司在张江的office不太远，不过离市区还是有点远，又没有地铁。不过环境是是不错的。跟客户在数据中心的交流细节就略过了。。。
 ![CMB](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/cmb.jpg)
 ![PuDong](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/pudong.jpg)
+
+
+### Kubecon2019
 
 借着在上海拜访客户的机会，参加了KubeCon 2019。这是我第一次参加KubeCon的会议，对我来说即熟悉又新奇。熟悉的是跟往届Youtube上的视频形式差不多，新奇的是现场的感觉还真的是不一样！
 
@@ -70,10 +75,10 @@ KubeEdge 是今年一个比较热门的话题，也许跟5G的到来有关。。
 看Trend，多云和异构必将是未来的方向，异构，就是俺们的机会啦，加油吧，LinuxONE的小伙伴们。。。
 
 
-相逢总是太短，两天的日程实际上只有一天半，周三中午conf就早早结束了，也许是组委会鼓励大家就近转转？也好，出来世博中心，几百米远就是世博的中国文化馆，俗称中国尊，就在地铁口。。。
+相逢总是太短，两天的Kubecon日程实际上只有一天半，周三中午conf就早早结束了，也许是组委会鼓励大家就近转转？也好，出来世博中心，几百米远就是世博的中国文化馆，俗称中国尊，就在地铁口。。。
 ![China](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/china.jpg)
 
-中国尊出来，看看还有时间，就又来到外滩匆匆一瞥。。。
+中国尊出来，看看还有时间，就又来到外滩匆匆一瞥。。。浦发门口的铜牛依旧劲头十足，黄浦江对面的厨房三件套则已经笼罩在云蒸霞蔚之中了。。。
 ![Waitan](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/waitan-1.jpg)
 ![Waitan](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/waitan-2.jpg)
 
