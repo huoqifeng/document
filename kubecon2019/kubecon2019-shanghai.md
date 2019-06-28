@@ -72,8 +72,9 @@ IBM的session我还看了几个，一个是istio的最佳实践，一个是Hyper
 KubeEdge 是今年一个比较热门的话题，也许跟5G的到来有关。。。
 ![Edge](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/edge-arch.jpg)
 
-看Trend，多云和异构必将是未来的方向，异构，就是俺们的机会啦，加油吧，LinuxONE的小伙伴们。。。
+**看Trend，多云和异构必将是未来的方向，异构，就是俺们的机会啦，加油吧，LinuxONE的小伙伴们。。。**
 
+### 别离
 
 相逢总是太短，两天的Kubecon日程实际上只有一天半，周三中午conf就早早结束了，也许是组委会鼓励大家就近转转？也好，出来世博中心，几百米远就是世博的中国文化馆，俗称中国尊，就在地铁口。。。
 ![China](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/china.jpg)
