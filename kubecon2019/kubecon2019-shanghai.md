@@ -63,12 +63,10 @@ IBM的session我还看了几个，一个是istio的最佳实践，一个是Hyper
 ![Eviction](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/eviction.jpg)
 
 
-KubeEdge 也是一个比较热门的话题
+KubeEdge 是今年一个比较热门的话题，也许跟5G的到来有关。。。
 ![Edge](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/edge-arch.jpg)
 
 看Trend，多云和异构必将是未来的方向，加油吧，LinuxONE的小伙伴。。。
-![kata](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/kata.jpg)
-
 
 
 相逢总是太短，两天的日程实际上只有一天半，周三中午conf就早早结束了，也许是组委会鼓励大家就近转转？也好，出来世博中心，几百米远就是世博的中国文化馆，俗称中国尊，就在地铁口。。。
@@ -77,3 +75,5 @@ KubeEdge 也是一个比较热门的话题
 中国尊出来，看看还有时间，就又来到外滩匆匆一瞥。。。
 ![Waitan](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/waitan-1.jpg)
 ![Waitan](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/waitan-2.jpg)
+
+再见上海！再见 Kubeconf 2019！
