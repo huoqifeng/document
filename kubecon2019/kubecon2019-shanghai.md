@@ -84,3 +84,6 @@ KubeEdge 是今年一个比较热门的话题，也许跟5G的到来有关。。
 ![Waitan](https://github.com/huoqifeng/document/blob/master/kubecon2019/images/waitan-2.jpg)
 
 烟雨中踏上归途。。。再见上海！再见 Kubeconf 2019！
+
+
+Find the schedule and download the PDF if there is any:  https://kccncosschn19chi.sched.com/
