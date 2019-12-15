@@ -15,7 +15,6 @@
 
 ### DES, 3DES and AES
 常用的对称加密算法有 DES，3DES和AES，已经证明DES不再安全，所以推荐使用AES，至少是3DES。
-TODO: 参考[]
 
 ### MD5, SHA1, SHA2, SHA256...
 非对称加密以SHA加密组为最主要的加密算法。
@@ -34,8 +33,6 @@ TODO: 参考[]
 ### 同太加密（Homomorphic encryption）
 随着云计算的普及，最近有一种新的加密算法正在被越来越多的企业和机构所关注，这就是同太加密。
 同太加密的概念是这样的，数据在加密以后还可以进行运算，比如加减乘除，加密数据运算后的结果当然还是加密的状态，对于运算执行着来说这些数据是没有意义的，运算的执行者就是云计算厂商。但是这些运算过的结果返回给客户以后，客户可以把它再解密，还原结果，这个结果跟没加密的数据执行相同的运算的结果是一样的。也就是说，云计算厂商只是提供运算能力，对它操作的数据一无所知。
-
-TODO: 参考[]
 
 ## 签名及验证
 说完加密，咱们再来看看签名。生活中我们用到签名的地方一般是要证明一种身份，这个身份得到证明的时候，我就可以信任他。所以签名实际上是一种信任关系。
@@ -287,5 +284,7 @@ server {
 
 ## 引用
 https://www.thesslstore.com/blog/root-certificates-intermediate/
+
 https://www.thesslstore.com/blog/root-certificates-intermediate/
+
 https://en.wikipedia.org/wiki/X.509
