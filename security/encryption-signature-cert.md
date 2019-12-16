@@ -146,7 +146,7 @@ Home: /Users/huoqifeng/.gnupg
 
 我们先来看一看证书使用的一个使用流程
 
-![证书的使用流程](img/certificate.png)
+![证书的使用流程](images/certificate.png)
 
 先来了解一下各个角色和流程：
 
