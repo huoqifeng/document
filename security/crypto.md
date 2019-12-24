@@ -44,7 +44,7 @@ Enterprise PKCS#11, The EP11 library1 provides an interface very similar to the 
 
 ![Stack and process flow with a configured EP11 token](./images/ep11_overview.jpg)
 
-![EP11 Request](./images/ep11_request.jpg)
+![EP11 Request](./images/ep11_request.png)
 
 ### GREP11
 
@@ -72,9 +72,9 @@ gRPC clients and servers can run and talk to each other in a variety of environm
 
 ## Reference
 
-![FIPS 140-2](https://en.wikipedia.org/wiki/FIPS_140-2)
-![PKCS#11](https://en.wikipedia.org/wiki/PKCS_11)
-![EP11](https://www.ibm.com/downloads/cas/WXRDPRAN)
-![GREP11](https://cloud.ibm.com/docs/services/hs-crypto?topic=hs-crypto-enterprise_PKCS11_overview&locale=dk#grep11_intro)
-![gRPC](https://grpc.io/docs/guides/index.html)
+[FIPS 140-2](https://en.wikipedia.org/wiki/FIPS_140-2)
+[PKCS#11](https://en.wikipedia.org/wiki/PKCS_11)
+[EP11](https://www.ibm.com/downloads/cas/WXRDPRAN)
+[GREP11](https://cloud.ibm.com/docs/services/hs-crypto?topic=hs-crypto-enterprise_PKCS11_overview&locale=dk#grep11_intro)
+[gRPC](https://grpc.io/docs/guides/index.html)
 https://www.ibm.com/support/knowledgecenter/en/linuxonibm/com.ibm.linux.z.lxce/lxce_stack.html
