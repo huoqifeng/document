@@ -44,6 +44,8 @@ Enterprise PKCS#11, The EP11 library1 provides an interface very similar to the 
 
 ![Stack and process flow with a configured EP11 token](./images/ep11_overview.jpg)
 
+![EP11 Request](./images/ep11_request.jpg)
+
 ### GREP11
 
 EP11 over gRPC, Hyper Protect Crypto Services provides a set of EP11 APIs over gRPC calls, with which all the Crypto functions are executed in a Hardware Security Module (HSM) on the cloud. EP11 over gRPC is designed to be a stateless interface for cryptographic operations on cloud.
