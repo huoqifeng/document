@@ -142,6 +142,17 @@ https://github.com/projectcalico/cni-plugin/blob/master/pkg/k8s/k8s.go#L51
 CmdAddK8s
 ```
 
+- What IP range is used in CNI plugin?
+Defined in kubelet parameters and can be retrieved by CNI plugin
+```
+kubelet --pod-cidr 172.168.0.0/16
+```
+
+So, the parameters to support CNI looks like:
+```
+
+```
+
 ## Bonus
 
 Want to implement a CNI by yourself? it's difinitely a bonus can be found here: https://github.com/containernetworking/plugins/tree/master/plugins/sample
