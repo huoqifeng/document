@@ -52,6 +52,11 @@ total 144900
 
 Once kubelet get the config and binaries path, the plugin could be initialized.
 
+Then, where these files come from? It's installed by Calico:
+```
+https://github.com/projectcalico/cni-plugin/blob/master/pkg/install/install.go#L118
+```
+
 ## How kubelet initialize a CNI plugin?
 
 ### For dockershim
@@ -130,6 +135,13 @@ RunPodSandbox
 
 Where `ExecPlugin` will fall in to teh binaries identified in `/etc/cni/net.d/10-calico.conflist` and `/opt/cni/bin`. `"ADD"` to trigger the `cmdAdd` interface defined in CNI spec here: https://github.com/containernetworking/cni/blob/master/SPEC.md#Parameters. So kubernetes and the CRI runtime don't need care about the IPAM (IP Address Allocations) and the policies.
 
+- What happens within Calico plugin?
+
+```
+https://github.com/projectcalico/cni-plugin/blob/master/pkg/k8s/k8s.go#L51
+CmdAddK8s
+```
+
 ## Bonus
 
-Want to implement a CNI by yourself, it's difinitely a bonus can be found here: https://github.com/containernetworking/plugins/tree/master/plugins/sample
+Want to implement a CNI by yourself? it's difinitely a bonus can be found here: https://github.com/containernetworking/plugins/tree/master/plugins/sample
