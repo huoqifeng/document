@@ -150,7 +150,7 @@ kubelet --pod-cidr 172.168.0.0/16
 
 So, the parameters to support CNI looks like:
 ```
-
+kubelet --network-plugin=cni --cni-conf-dir=/etc/cni/net.d --cni-bin-dir=/opt/cni/bin --container-runtime=remote --containerd=containerd/containerd.sock --pod-cidr 172.168.0.0/16
 ```
 
 ## Bonus
