@@ -153,6 +153,21 @@ So, the parameters to support CNI looks like:
 kubelet --network-plugin=cni --cni-conf-dir=/etc/cni/net.d --cni-bin-dir=/opt/cni/bin --container-runtime=remote --containerd=containerd/containerd.sock --pod-cidr 172.168.0.0/16
 ```
 
+Let's have a looks at the Pod that get assigned an IP:
+```
+root@32bdb3f8d189:~# kubectl get po cert-manager-5c59fcdbd5-mdjgl -o wide
+NAME                            READY   STATUS    RESTARTS   AGE     IP              NODE           NOMINATED NODE   READINESS GATES
+cert-manager-5c59fcdbd5-mdjgl   1/1     Running   0          2d16h   172.168.66.10   32bdb3f8d189   <none>           <none>
+```
+
+Check the IP of the host:
+```
+root@32bdb3f8d189:~# hostname -I
+172.168.66.0 172.17.0.1 20.22.110.83
+```
+
+You can see, the Pod is on the same network with Node (Host), and the Host takes the sub network IP `172.168.66.0`.
+
 ## Bonus
 
 Want to implement a CNI by yourself? it's difinitely a bonus can be found here: https://github.com/containernetworking/plugins/tree/master/plugins/sample
