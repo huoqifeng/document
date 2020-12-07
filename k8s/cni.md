@@ -171,3 +171,6 @@ You can see, the Pod is on the same network with Node (Host), and the Host takes
 ## Bonus
 
 Want to implement a CNI by yourself? it's difinitely a bonus can be found here: https://github.com/containernetworking/plugins/tree/master/plugins/sample
+
+## Packets flow:
+Refer: https://events19.linuxfoundation.org/wp-content/uploads/2018/07/Packet_Walks_In_Kubernetes-v4.pdf
