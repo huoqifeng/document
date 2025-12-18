@@ -1,0 +1,110 @@
+@startuml
+!define RECTANGLE class
+!define DATABASE class
+
+skinparam component {
+  BackgroundColor<<Hardware>> LightBlue
+  BackgroundColor<<Platform>> LightGreen
+  BackgroundColor<<Service>> LightYellow
+  BackgroundColor<<UI>> LightCoral
+  BackgroundColor<<Data>> Lavender
+}
+
+title AI Infrastructure Architecture - Hardware Accelerators & Kubernetes Platform
+
+' Hardware Layer
+package "Hardware Accelerators" {
+  component "NVIDIA GPU\n(A100/V100/H100)" <<Hardware>>
+  component "Huawei NPU\n(Ascend 910)" <<Hardware>>
+  component "Haiguang DCU\n(Hygon)" <<Hardware>>
+  component "Chinese Cards\n(Cambricon/Birentech)" <<Hardware>>
+}
+
+' Kubernetes Platform Layer
+package "Kubernetes Platform" {
+  component "Kubernetes Cluster\n(Master/Worker Nodes)" <<Platform>>
+  component "HAMi\n(Heterogeneous AI\nManagement Interface)" <<Platform>>
+  component "Volcano\n(Batch Scheduling\nSystem)" <<Platform>>
+  component "Device Plugin\n(GPU/NPU/DCU)" <<Platform>>
+}
+
+' Service Layer
+package "AI Services" {
+  component "KServe\n(Model Serving)" <<Service>>
+  component "Kong Gateway\n(API Gateway)" <<Service>>
+  component "Rasa\n(AI Agent Engine)" <<Service>>
+  component "Model Registry\n(Harbor/MLflow)" <<Service>>
+  component "Monitoring\n(Prometheus/Grafana)" <<Service>>
+}
+
+' UI Layer
+package "User Interface" {
+  component "Botpress Chat\n(Conversational UI)" <<UI>>
+  component "Admin Dashboard\n(Kubernetes Dashboard)" <<UI>>
+}
+
+' Data Layer
+package "Data Storage" {
+  database "Model Storage\n(S3/MinIO)" <<Data>>
+  database "Training Data\n(HDFS/Ceph)" <<Data>>
+  database "Logs & Metrics\n(Elasticsearch)" <<Data>>
+}
+
+' Connections
+"NVIDIA GPU\n(A100/V100/H100)" --> "Device Plugin\n(GPU/NPU/DCU)"
+"Huawei NPU\n(Ascend 910)" --> "Device Plugin\n(GPU/NPU/DCU)"
+"Haiguang DCU\n(Hygon)" --> "Device Plugin\n(GPU/NPU/DCU)"
+"Chinese Cards\n(Cambricon/Birentech)" --> "Device Plugin\n(GPU/NPU/DCU)"
+
+"Device Plugin\n(GPU/NPU/DCU)" --> "Kubernetes Cluster\n(Master/Worker Nodes)"
+"Kubernetes Cluster\n(Master/Worker Nodes)" --> "HAMi\n(Heterogeneous AI\nManagement Interface)"
+"Kubernetes Cluster\n(Master/Worker Nodes)" --> "Volcano\n(Batch Scheduling\nSystem)"
+
+"HAMi\n(Heterogeneous AI\nManagement Interface)" --> "KServe\n(Model Serving)"
+"Volcano\n(Batch Scheduling\nSystem)" --> "KServe\n(Model Serving)"
+
+"KServe\n(Model Serving)" --> "Kong Gateway\n(API Gateway)"
+"Kong Gateway\n(API Gateway)" --> "Rasa\n(AI Agent Engine)"
+"Rasa\n(AI Agent Engine)" --> "Botpress Chat\n(Conversational UI)"
+
+"KServe\n(Model Serving)" --> "Model Registry\n(Harbor/MLflow)"
+"KServe\n(Model Serving)" --> "Model Storage\n(S3/MinIO)"
+
+"Monitoring\n(Prometheus/Grafana)" --> "Kubernetes Cluster\n(Master/Worker Nodes)"
+"Monitoring\n(Prometheus/Grafana)" --> "KServe\n(Model Serving)"
+"Monitoring\n(Prometheus/Grafana)" --> "Logs & Metrics\n(Elasticsearch)"
+
+"Training Data\n(HDFS/Ceph)" --> "KServe\n(Model Serving)"
+"Admin Dashboard\n(Kubernetes Dashboard)" --> "Kubernetes Cluster\n(Master/Worker Nodes)"
+
+note right of "HAMi\n(Heterogeneous AI\nManagement Interface)"
+  Manages heterogeneous AI accelerators
+  GPU sharing, memory management
+  Multi-vendor support
+end note
+
+note right of "Volcano\n(Batch Scheduling\nSystem)"
+  Batch job scheduling
+  Gang scheduling for distributed training
+  Queue management
+end note
+
+note right of "KServe\n(Model Serving)"
+  Serverless model serving
+  Auto-scaling, canary deployments
+  Multi-framework support
+end note
+
+note right of "Kong Gateway\n(API Gateway)"
+  Rate limiting, authentication
+  Load balancing, circuit breaking
+  API management
+end note
+
+note right of "Rasa\n(AI Agent Engine)"
+  Conversational AI framework
+  Intent recognition, entity extraction
+  Dialogue management
+end note
+
+@enduml

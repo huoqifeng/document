@@ -1,0 +1,123 @@
+@startuml
+!define RECTANGLE class
+!define DATABASE class
+
+skinparam component {
+  BackgroundColor<<Request>> LightBlue
+  BackgroundColor<<Processing>> LightGreen
+  BackgroundColor<<Storage>> LightYellow
+  BackgroundColor<<Response>> LightCoral
+}
+
+title AI Infrastructure Data Flow - End-to-End Request Processing
+
+' Request Flow
+actor User
+participant "Botpress Chat\n(UI Layer)" as UI <<Request>>
+participant "Kong Gateway\n(API Gateway)" as Gateway <<Request>>
+participant "Rasa AI Agent\n(Intent Processing)" as Rasa <<Processing>>
+participant "KServe\n(Model Serving)" as KServe <<Processing>>
+participant "HAMi Scheduler\n(Resource Manager)" as HAMi <<Processing>>
+participant "Volcano\n(Batch Scheduler)" as Volcano <<Processing>>
+
+' Hardware Resources
+participant "GPU Pool\n(NVIDIA)" as GPU <<Processing>>
+participant "NPU Pool\n(Huawei Ascend)" as NPU <<Processing>>
+participant "DCU Pool\n(Haiguang)" as DCU <<Processing>>
+participant "Chinese Cards\n(Cambricon)" as CHCards <<Processing>>
+
+' Storage Systems
+database "Model Registry\n(Harbor/MLflow)" as ModelReg <<Storage>>
+database "Model Storage\n(S3/MinIO)" as ModelStore <<Storage>>
+database "Training Data\n(HDFS/Ceph)" as TrainData <<Storage>>
+database "Logs & Metrics\n(Elasticsearch)" as Logs <<Storage>>
+
+' Response Flow
+participant "Response Aggregator\n(Result Processing)" as Aggregator <<Response>>
+participant "Monitoring\n(Prometheus/Grafana)" as Monitor <<Response>>
+
+== User Request Flow ==
+User -> UI: Send query/request
+UI -> Gateway: Forward request\n(with auth token)
+Gateway -> Gateway: Validate request\n(rate limit, auth)
+Gateway -> Rasa: Route to AI agent
+
+== Intent Processing ==
+Rasa -> Rasa: Parse intent\nextract entities
+Rasa -> Rasa: Determine required\nmodel/capabilities
+Rasa -> KServe: Request model inference
+
+== Resource Scheduling ==
+KServe -> HAMi: Request accelerator\nresource allocation
+HAMi -> HAMi: Check available\nGPU/NPU/DCU resources
+HAMi -> Volcano: Submit batch job\nrequest if needed
+Volcano -> Volcano: Queue management\ngang scheduling
+
+== Model Loading & Execution ==
+KServe -> ModelReg: Fetch model\nmetadata
+KServe -> ModelStore: Download\nmodel artifacts
+KServe -> TrainData: Load training\ndata if needed
+
+' Hardware assignment based on model requirements
+alt Model requires NVIDIA GPU
+  KServe -> GPU: Assign GPU resources\nload CUDA libraries
+  GPU -> KServe: Execute model inference
+else Model requires Huawei NPU
+  KServe -> NPU: Assign NPU resources\nload CANN libraries
+  NPU -> KServe: Execute model inference
+else Model requires Haiguang DCU
+  KServe -> DCU: Assign DCU resources\nload ROCm libraries
+  DCU -> KServe: Execute model inference
+else Model requires Chinese Cards
+  KServe -> CHCards: Assign card resources\nload vendor libraries
+  CHCards -> KServe: Execute model inference
+end
+
+== Response Processing ==
+KServe -> Aggregator: Model inference\nresults
+Aggregator -> Rasa: Process results\nformat response
+Rasa -> Gateway: Return formatted\nresponse
+Gateway -> UI: Forward response\nto user
+UI -> User: Display response
+
+== Monitoring & Logging ==
+KServe -> Monitor: Send metrics\n(latency, throughput)
+Gateway -> Monitor: Send API metrics\n(request count, errors)
+HAMi -> Monitor: Send resource metrics\n(GPU utilization, memory)
+Volcano -> Monitor: Send scheduling metrics\n(queue depth, wait time)
+Monitor -> Logs: Store metrics\nand logs
+Monitor -> Monitor: Dashboard updates\nalerts if needed
+
+note over "Resource allocation happens dynamically based on:\n- Model requirements (GPU memory, compute)\n- Current cluster utilization\n- Queue priorities and policies\n- Hardware capabilities and compatibility"
+
+note right of "HAMi Scheduler\n(Resource Manager)"
+  Manages heterogeneous resources:
+  - GPU memory sharing
+  - Multi-vendor support
+  - Device isolation
+  - Resource quotas
+end note
+
+note right of "Volcano\n(Batch Scheduler)"
+  Handles batch workloads:
+  - Gang scheduling for distributed training
+  - Queue-based job management
+  - Priority scheduling
+  - Resource fairness
+end note
+
+note right of "Model Storage\n(S3/MinIO)"
+  Stores:
+  - Trained models
+  - Model versions
+  - Artifacts and metadata
+  - Configuration files
+end note
+
+== Training Data Flow ==
+note over of Monitor
+  Training workflow follows similar pattern but with additional steps for
+  data preprocessing, distributed training coordination, and model checkpointing
+end note
+
+@enduml
